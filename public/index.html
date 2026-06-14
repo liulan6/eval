@@ -11,8 +11,8 @@
     <h1>🧬 生物视频理解 · 语音讲述评分</h1>
 
     <section class="card">
-      <h2>① 视频英文原文描述</h2>
-      <textarea id="videoText" rows="6" placeholder="粘贴这段生物教学视频的英文文字描述...">The mitochondria is the powerhouse of the cell. It generates most of the cell's supply of ATP through cellular respiration, using oxygen and glucose to produce energy.</textarea>
+      <h2>① 视频内容（内分泌与激素）</h2>
+      <p class="video-text">内分泌腺没有导管，它们分泌的激素进入腺体内的毛细血管，随着循环系统传送到身体各处，直到碰到特定的组织细胞，我们把这些细胞叫做激素的靶细胞，就像一把钥匙只能开一把锁那样，不是该激素的靶细胞不会受到这种激素的影响。</p>
     </section>
 
     <section class="card">
@@ -30,8 +30,13 @@
 
     <section class="card result hidden" id="resultCard">
       <h2>📊 评分结果</h2>
-      <div class="score-box">总分：<span id="score">--</span></div>
-      <div id="dimensions" class="dimensions"></div>
+      <div class="score-box">总分：<span id="score">--</span> / <span id="totalFull">10</span></div>
+      <table class="rubric-table">
+        <thead>
+          <tr><th>评价指标</th><th>得分</th></tr>
+        </thead>
+        <tbody id="rubricBody"></tbody>
+      </table>
       <h3>整体点评</h3>
       <p id="comment"></p>
       <h3>科学性错误</h3>

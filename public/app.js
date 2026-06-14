@@ -2,7 +2,6 @@ const recordBtn = document.getElementById('recordBtn');
 const evalBtn = document.getElementById('evalBtn');
 const statusEl = document.getElementById('status');
 const studentTextEl = document.getElementById('studentText');
-const videoTextEl = document.getElementById('videoText');
 
 let recorder = null;
 let isRecording = false;
@@ -59,10 +58,9 @@ recordBtn.addEventListener('click', async () => {
 });
 
 evalBtn.addEventListener('click', async () => {
-  const videoText = videoTextEl.value.trim();
   const studentText = studentTextEl.value.trim();
-  if (!videoText || !studentText) {
-    alert('请确保视频原文和学生讲述都已填写');
+  if (!studentText) {
+    alert('请先录音或填写讲述内容');
     return;
   }
   evalBtn.disabled = true;
@@ -71,7 +69,7 @@ evalBtn.addEventListener('click', async () => {
     const resp = await fetch('/api/evaluate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ videoText, studentText }),
+      body: JSON.stringify({ studentText }),
     });
     const data = await resp.json();
     if (data.ok) {
@@ -90,18 +88,15 @@ evalBtn.addEventListener('click', async () => {
 function renderResult(result) {
   document.getElementById('resultCard').classList.remove('hidden');
   document.getElementById('score').textContent = result.score ?? '--';
+  document.getElementById('totalFull').textContent = result.totalFull ?? 10;
 
-  const dimNames = { accuracy: '理解准确度', coverage: '关键概念覆盖', completeness: '完整度', clarity: '表达清晰度' };
-  const dimEl = document.getElementById('dimensions');
-  dimEl.innerHTML = '';
-  if (result.dimensions) {
-    Object.entries(result.dimensions).forEach(([k, v]) => {
-      const div = document.createElement('div');
-      div.className = 'dim-item';
-      div.innerHTML = `<span>${dimNames[k] || k}</span><strong>${v}</strong>`;
-      dimEl.appendChild(div);
-    });
-  }
+  const body = document.getElementById('rubricBody');
+  body.innerHTML = '';
+  (result.items || []).forEach((it) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="dim-tag">${it.dimension}</span>${it.desc}<div class="reason">${it.reason || ''}</div></td><td class="score-cell">${it.score}/${it.full}</td>`;
+    body.appendChild(tr);
+  });
 
   document.getElementById('comment').textContent = result.comment || '';
 
