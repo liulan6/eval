@@ -31,7 +31,6 @@
     overflow-x: hidden;
   }
 
-  /* Background decoration */
   body::before {
     content: '';
     position: fixed;
@@ -53,7 +52,6 @@
     z-index: 1;
   }
 
-  /* Header */
   .header {
     text-align: center;
     margin-bottom: 32px;
@@ -62,18 +60,9 @@
     border-radius: var(--radius);
     box-shadow: 0 8px 32px rgba(99,102,241,0.3);
   }
-  .header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-  }
-  .header p {
-    font-size: 15px;
-    color: rgba(255,255,255,0.8);
-  }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
+  .header p { font-size: 15px; color: rgba(255,255,255,0.8); }
 
-  /* Steps */
   .steps {
     display: flex;
     gap: 12px;
@@ -105,22 +94,11 @@
     font-size: 13px;
     transition: all 0.3s;
   }
-  .step.active {
-    border-color: var(--primary);
-    background: rgba(99,102,241,0.15);
-  }
-  .step.active .num {
-    background: var(--primary);
-  }
-  .step.done {
-    border-color: var(--success);
-    background: rgba(34,197,94,0.1);
-  }
-  .step.done .num {
-    background: var(--success);
-  }
+  .step.active { border-color: var(--primary); background: rgba(99,102,241,0.15); }
+  .step.active .num { background: var(--primary); }
+  .step.done { border-color: var(--success); background: rgba(34,197,94,0.1); }
+  .step.done .num { background: var(--success); }
 
-  /* Video Section */
   .video-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -138,10 +116,7 @@
     border: 2px solid var(--border);
     transition: border-color 0.3s;
   }
-  .video-card.active {
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(99,102,241,0.2);
-  }
+  .video-card.active { border-color: var(--primary); box-shadow: 0 0 20px rgba(99,102,241,0.2); }
   .video-card-label {
     padding: 12px 16px;
     font-weight: 700;
@@ -152,20 +127,9 @@
     background: rgba(0,0,0,0.2);
   }
   .video-card-label .icon { font-size: 20px; }
-  video {
-    width: 100%;
-    display: block;
-    background: #000;
-    cursor: pointer;
-  }
-  .video-hint {
-    padding: 10px 16px;
-    font-size: 13px;
-    color: var(--text-muted);
-    background: rgba(0,0,0,0.1);
-  }
+  video { width: 100%; display: block; background: #000; cursor: pointer; }
+  .video-hint { padding: 10px 16px; font-size: 13px; color: var(--text-muted); background: rgba(0,0,0,0.1); }
 
-  /* Record Section */
   .record-section {
     background: var(--card);
     border-radius: var(--radius);
@@ -174,10 +138,7 @@
     border: 2px solid var(--border);
     text-align: center;
   }
-  .record-section h3 {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
+  .record-section h3 { font-size: 18px; margin-bottom: 20px; }
 
   .record-btn {
     width: 88px;
@@ -201,18 +162,9 @@
     border-radius: 50%;
     transition: all 0.3s;
   }
-  .record-btn.recording::before {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-  }
-  .record-btn.recording {
-    animation: pulse-ring 1.5s infinite;
-  }
-  .record-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  .record-btn.recording::before { width: 24px; height: 24px; border-radius: 6px; }
+  .record-btn.recording { animation: pulse-ring 1.5s infinite; }
+  .record-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   @keyframes pulse-ring {
     0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
@@ -220,18 +172,9 @@
     100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
   }
 
-  .record-status {
-    font-size: 15px;
-    color: var(--text-muted);
-    min-height: 24px;
-    margin-bottom: 16px;
-  }
-  .record-status.recording-text {
-    color: var(--danger);
-    font-weight: 600;
-  }
+  .record-status { font-size: 15px; color: var(--text-muted); min-height: 24px; margin-bottom: 16px; }
+  .record-status.recording-text { color: var(--danger); font-weight: 600; }
 
-  /* Transcript */
   .transcript-box {
     background: rgba(0,0,0,0.3);
     border-radius: 12px;
@@ -244,18 +187,20 @@
     color: var(--text);
     position: relative;
   }
-  .transcript-box .placeholder {
-    color: var(--text-muted);
-    font-style: italic;
-  }
-  .transcript-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary-light);
-    margin-bottom: 8px;
+  .transcript-label { font-size: 13px; font-weight: 600; color: var(--primary-light); margin-bottom: 8px; }
+  .transcript-box textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.8;
+    resize: vertical;
+    font-family: inherit;
+    min-height: 60px;
+    outline: none;
   }
 
-  /* Score Section */
   .score-section {
     background: var(--card);
     border-radius: var(--radius);
@@ -263,7 +208,7 @@
     border: 2px solid var(--border);
     display: none;
   }
-  .score-section.show { display: block; }
+  .score-section.show { display: block; animation: scoreIn 0.4s ease; }
 
   .score-header {
     display: flex;
@@ -284,36 +229,14 @@
     justify-content: center;
     position: relative;
   }
-  .total-score-circle .score-num {
-    font-size: 40px;
-    font-weight: 800;
-    line-height: 1;
-  }
-  .total-score-circle .score-label {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
+  .total-score-circle .score-num { font-size: 40px; font-weight: 800; line-height: 1; }
+  .total-score-circle .score-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-  .score-summary-text {
-    text-align: left;
-  }
-  .score-summary-text h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
-  }
-  .score-summary-text p {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
+  .score-summary-text { text-align: left; max-width: 420px; }
+  .score-summary-text h3 { font-size: 20px; margin-bottom: 8px; }
+  .score-summary-text p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
-  /* Score detail table */
-  .score-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-  }
+  .score-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
   .score-table th {
     text-align: left;
     padding: 10px 12px;
@@ -326,7 +249,7 @@
     padding: 12px;
     font-size: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
-    vertical-align: middle;
+    vertical-align: top;
   }
   .score-table tr:last-child td { border-bottom: none; }
   .score-table .category-row td {
@@ -335,35 +258,26 @@
     padding-top: 16px;
     font-size: 15px;
   }
+  .score-table .reason { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+  .score-cell { white-space: nowrap; font-weight: 700; }
 
-  .score-bar {
-    width: 60px;
-    height: 8px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
-  .score-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 600;
-  }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
   .badge-full { background: rgba(34,197,94,0.2); color: var(--success); }
   .badge-partial { background: rgba(245,158,11,0.2); color: var(--warning); }
   .badge-zero { background: rgba(239,68,68,0.2); color: var(--danger); }
 
-  /* Reference text */
+  .comment-box {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    border-left: 3px solid var(--primary);
+  }
+  .comment-box h4 { font-size: 14px; color: var(--primary-light); margin-bottom: 8px; }
+  .comment-box p { font-size: 14px; color: var(--text); line-height: 1.7; }
+  .comment-box ul { margin: 6px 0 0 18px; }
+  .comment-box li { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
+
   .reference-section {
     background: var(--card);
     border-radius: var(--radius);
@@ -371,11 +285,7 @@
     margin-bottom: 28px;
     border: 2px solid var(--border);
   }
-  .reference-section h4 {
-    font-size: 15px;
-    margin-bottom: 10px;
-    color: var(--primary-light);
-  }
+  .reference-section h4 { font-size: 15px; margin-bottom: 10px; color: var(--primary-light); }
   .reference-text {
     font-size: 14px;
     line-height: 2;
@@ -386,7 +296,6 @@
     border-left: 3px solid var(--primary);
   }
 
-  /* Buttons */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -399,27 +308,14 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  .btn-primary {
-    background: var(--primary);
-    color: white;
-  }
+  .btn-primary { background: var(--primary); color: white; }
   .btn-primary:hover { background: var(--primary-dark); }
-  .btn-outline {
-    background: transparent;
-    color: var(--text);
-    border: 2px solid var(--border);
-  }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--border); }
   .btn-outline:hover { border-color: var(--primary); color: var(--primary-light); }
 
-  .action-bar {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 24px;
-    flex-wrap: wrap;
-  }
+  .action-bar { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
 
-  /* Toast */
   .toast {
     position: fixed;
     top: 24px;
@@ -439,52 +335,32 @@
   .toast.error { border-color: var(--danger); color: var(--danger); }
   .toast.success { border-color: var(--success); color: var(--success); }
 
-  /* Responsive */
   @media (max-width: 600px) {
     .header h1 { font-size: 22px; }
     .score-header { flex-direction: column; gap: 16px; }
     .container { padding: 12px 12px 40px; }
   }
 
-  /* Score animation */
   @keyframes scoreIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-  .score-section.show { animation: scoreIn 0.4s ease; }
-
-  /* Highlight matched keywords */
-  .highlight {
-    background: rgba(99,102,241,0.3);
-    padding: 1px 4px;
-    border-radius: 3px;
-    color: var(--primary-light);
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Header -->
   <div class="header">
     <h1>🎬 AI 配音评分系统</h1>
     <p>内分泌腺与激素 — 看视频 · 学配音 · 智能评分</p>
   </div>
 
-  <!-- Steps -->
   <div class="steps">
-    <div class="step active" id="step1">
-      <span class="num">1</span> 观看学习
-    </div>
-    <div class="step" id="step2">
-      <span class="num">2</span> 录制配音
-    </div>
-    <div class="step" id="step3">
-      <span class="num">3</span> 查看评分
-    </div>
+    <div class="step active" id="step1"><span class="num">1</span> 观看学习</div>
+    <div class="step" id="step2"><span class="num">2</span> 录制配音</div>
+    <div class="step" id="step3"><span class="num">3</span> 查看评分</div>
   </div>
 
-  <!-- Reference Text -->
   <div class="reference-section">
     <h4>📖 参考台词</h4>
     <div class="reference-text">
@@ -492,7 +368,6 @@
     </div>
   </div>
 
-  <!-- Video Section -->
   <div class="video-section">
     <div class="video-card active" id="learnCard">
       <div class="video-card-label"><span class="icon">🔊</span> 有声视频 · 学习观摩</div>
@@ -512,7 +387,6 @@
     </div>
   </div>
 
-  <!-- Record Section -->
   <div class="record-section" id="recordSection">
     <h3>🎙️ 开始你的配音</h3>
     <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
@@ -522,17 +396,16 @@
     <div class="record-status" id="recordStatus">点击红色按钮开始录音</div>
 
     <div class="transcript-box" id="transcriptBox" style="display:none;">
-      <div class="transcript-label">📝 语音识别结果</div>
-      <div id="transcriptText"></div>
+      <div class="transcript-label">📝 语音识别结果（可手动修正）</div>
+      <textarea id="transcriptText" rows="3" placeholder="转写文字会显示在这里..."></textarea>
     </div>
 
     <div class="action-bar">
-      <button class="btn btn-primary" id="scoreBtn" style="display:none;" onclick="doScore()">📊 查看评分</button>
+      <button class="btn btn-primary" id="scoreBtn" style="display:none;" onclick="doScore()">📊 提交 AI 评分</button>
       <button class="btn btn-outline" id="retryBtn" style="display:none;" onclick="doRetry()">🔄 重新录制</button>
     </div>
   </div>
 
-  <!-- Score Section -->
   <div class="score-section" id="scoreSection">
     <div class="score-header">
       <div class="total-score-circle" id="totalScoreCircle">
@@ -546,31 +419,36 @@
     </div>
     <table class="score-table" id="scoreTable">
       <thead>
-        <tr>
-          <th>评价内容</th>
-          <th>评价指标</th>
-          <th>得分</th>
-          <th>结果</th>
-        </tr>
+        <tr><th>评价内容</th><th>评价指标</th><th>得分</th><th>结果</th></tr>
       </thead>
       <tbody id="scoreBody"></tbody>
     </table>
+    <div class="comment-box" id="commentBox" style="display:none;">
+      <h4>💬 AI 点评</h4>
+      <p id="commentText"></p>
+    </div>
+    <div class="comment-box" id="errorsBox" style="display:none;">
+      <h4>⚠️ 科学性错误</h4>
+      <ul id="errorsList"></ul>
+    </div>
+    <div class="comment-box" id="suggestionsBox" style="display:none;">
+      <h4>💡 改进建议</h4>
+      <ul id="suggestionsList"></ul>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-outline" onclick="doRetry()">🔄 再来一次</button>
+    </div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="recorder.js"></script>
 <script>
 // ========== State ==========
 let isRecording = false;
-let mediaRecorder = null;
-let recognition = null;
-let fullTranscript = '';
-let interimTranscript = '';
-let recordingStartTime = 0;
-let recordingDuration = 0;
-const videoDuration = 60; // approximate, will be updated
+let recorder = null;
+let studentText = '';
 
 const silentVideo = document.getElementById('silentVideo');
 const soundVideo = document.getElementById('soundVideo');
@@ -581,7 +459,7 @@ const transcriptText = document.getElementById('transcriptText');
 const scoreBtn = document.getElementById('scoreBtn');
 const retryBtn = document.getElementById('retryBtn');
 
-// ========== Step Management ==========
+// ========== Step ==========
 function setStep(n) {
   for (let i = 1; i <= 3; i++) {
     const el = document.getElementById('step' + i);
@@ -589,7 +467,6 @@ function setStep(n) {
     if (i < n) el.classList.add('done');
     else if (i === n) el.classList.add('active');
   }
-  // Highlight active video card
   document.getElementById('learnCard').classList.toggle('active', n === 1);
   document.getElementById('dubCard').classList.toggle('active', n === 2);
 }
@@ -605,342 +482,123 @@ function showToast(msg, type = 'warn') {
 
 // ========== Recording ==========
 recordBtn.addEventListener('click', function() {
-  if (!isRecording) {
-    startRecording();
-  } else {
-    stopRecording();
-  }
+  if (!isRecording) startRecording();
+  else stopRecording();
 });
 
 async function startRecording() {
-  // Check browser support
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    showToast('当前浏览器不支持语音识别，请使用 Chrome 浏览器', 'error');
-    return;
-  }
-
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-
-    // Setup speech recognition
-    recognition = new SpeechRecognition();
-    recognition.lang = 'zh-CN';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    fullTranscript = '';
-    interimTranscript = '';
-
-    recognition.onresult = function(event) {
-      let interim = '';
-      let final = '';
-      for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
-        }
-      }
-      if (final) fullTranscript += final;
-      interimTranscript = interim;
-      updateTranscriptDisplay();
-    };
-
-    recognition.onerror = function(event) {
-      if (event.error === 'no-speech') return;
-      console.warn('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        showToast('麦克风权限被拒绝，请允许浏览器使用麦克风', 'error');
-        stopRecording();
-      }
-    };
-
-    recognition.onend = function() {
-      // Auto-restart if still recording
-      if (isRecording) {
-        try { recognition.start(); } catch(e) {}
-      }
-    };
-
-    // Start
-    recognition.start();
-    mediaRecorder.start();
-
+    recorder = new WavRecorder(16000);
+    await recorder.start();
     isRecording = true;
-    recordingStartTime = Date.now();
     recordBtn.classList.add('recording');
     recordStatus.textContent = '🔴 录音中...点击按钮停止';
     recordStatus.classList.add('recording-text');
-    transcriptBox.style.display = 'block';
+    transcriptBox.style.display = 'none';
     scoreBtn.style.display = 'none';
     retryBtn.style.display = 'none';
     setStep(2);
 
-    // Play silent video
     silentVideo.currentTime = 0;
     silentVideo.muted = true;
     silentVideo.play();
-
-    // Stop when video ends
     silentVideo.onended = function() {
       if (isRecording) {
         showToast('视频播放结束，录音自动停止', 'success');
         stopRecording();
       }
     };
-
-    // Pause the sound video if playing
     soundVideo.pause();
-
   } catch (err) {
     console.error(err);
     showToast('无法访问麦克风，请检查权限设置', 'error');
   }
 }
 
-function stopRecording() {
+async function stopRecording() {
+  if (!isRecording) return;
   isRecording = false;
-  recordingDuration = (Date.now() - recordingStartTime) / 1000;
-
-  if (recognition) {
-    try { recognition.stop(); } catch(e) {}
-    recognition = null;
-  }
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(t => t.stop());
-  }
-
   recordBtn.classList.remove('recording');
-  recordStatus.textContent = '✅ 录音完成';
+  recordBtn.disabled = true;
+  recordStatus.textContent = '⏳ 语音转写中...';
   recordStatus.classList.remove('recording-text');
   silentVideo.pause();
 
-  if (fullTranscript.trim()) {
-    scoreBtn.style.display = 'inline-flex';
-  } else {
-    showToast('未识别到语音内容，请重新录制', 'warn');
-  }
-  retryBtn.style.display = 'inline-flex';
-}
-
-function updateTranscriptDisplay() {
-  let html = fullTranscript;
-  if (interimTranscript) {
-    html += '<span style="color:var(--text-muted);font-style:italic;">' + interimTranscript + '</span>';
-  }
-  if (!html.trim()) {
-    html = '<span style="color:var(--text-muted);font-style:italic;">正在识别语音...</span>';
-  }
-  transcriptText.innerHTML = html;
-}
-
-// ========== Scoring Engine ==========
-const SCORING = {
-  criteria: [
-    {
-      category: '科学内容',
-      items: [
-        {
-          name: '能准确说明内分泌腺没有导管',
-          maxScore: 1,
-          check: (text) => {
-            const hasGland = /内分泌腺/.test(text);
-            const noDuct = /没有导管|无导管|不经导管|不通过导管|没有.*导管/.test(text);
-            return hasGland && noDuct ? 1 : 0;
-          },
-          hint: '需提到"内分泌腺"和"没有导管"'
-        },
-        {
-          name: '能准确说明激素直接进入血液',
-          maxScore: 1,
-          check: (text) => {
-            const hasHormone = /激素/.test(text);
-            const intoBlood = /进入.*(血液|毛细血管|血管)|直接.*(血液|毛细血管)/.test(text);
-            return hasHormone && intoBlood ? 1 : 0;
-          },
-          hint: '需提到"激素"和"进入血液/毛细血管"'
-        },
-        {
-          name: '能准确说明激素随血液循环运输到全身各处',
-          maxScore: 1,
-          check: (text) => {
-            const circulation = /血液循环|循环系统|随.*循环/.test(text);
-            const transport = /运输|传送|运送|到达|到.*全身|到.*各处/.test(text);
-            const wholeBody = /全身|各处|身体.*各处/.test(text);
-            if (circulation && (transport || wholeBody)) return 1;
-            if (circulation && wholeBody) return 1;
-            if (transport && wholeBody) return 0.5;
-            return 0;
-          },
-          hint: '需提到"血液循环"和"运输到全身各处"'
-        },
-        {
-          name: '能准确说明激素只作用于靶细胞',
-          maxScore: 2,
-          check: (text) => {
-            const hasTarget = /靶细胞/.test(text);
-            const specificity = /特定|专一|只.*作用|专门|对应|只能/.test(text);
-            const notAffected = /不是.*靶细胞.*不受|不会受到|不会.*影响/.test(text);
-            if (hasTarget && specificity && notAffected) return 2;
-            if (hasTarget && specificity) return 1.5;
-            if (hasTarget) return 1;
-            if (specificity) return 0.5;
-            return 0;
-          },
-          hint: '需提到"靶细胞"和"特异性/只作用于"'
-        },
-        {
-          name: '能用"钥匙和锁"等恰当比喻解释对应关系',
-          maxScore: 1,
-          check: (text) => {
-            const keyLock = /钥匙.*锁|锁.*钥匙|一把钥匙.*一把锁/.test(text);
-            const otherMetaphor = /就像|好比|如同|相当于|仿佛/.test(text) && !keyLock;
-            if (keyLock) return 1;
-            if (otherMetaphor) return 0.5;
-            return 0;
-          },
-          hint: '使用"钥匙和锁"比喻'
-        }
-      ]
-    },
-    {
-      category: '词汇与语言',
-      items: [
-        {
-          name: '能正确使用"内分泌腺、激素、血液循环、靶细胞"等关键词',
-          maxScore: 1,
-          check: (text) => {
-            const keywords = ['内分泌腺', '激素', '血液循环', '靶细胞'];
-            const found = keywords.filter(k => text.includes(k)).length;
-            if (found >= 4) return 1;
-            if (found >= 3) return 0.5;
-            return 0;
-          },
-          hint: '需使用4个核心关键词'
-        },
-        {
-          name: '语言表达准确、通顺',
-          maxScore: 1,
-          check: (text) => {
-            // Remove spaces
-            const clean = text.replace(/\s/g, '');
-            const len = clean.length;
-            // Check for reasonable length and structure
-            if (len < 20) return 0;
-            if (len < 40) return 0.3;
-            // Check for sentence-ending punctuation (。！？)
-            const hasSentences = /[。！？，、；]/.test(text);
-            // Check for grammatical coherence (basic)
-            const hasSubject = /内分泌腺|激素|它们|这/.test(text);
-            if (hasSentences && hasSubject && len >= 40) return 1;
-            if (hasSentences || hasSubject) return 0.5;
-            return 0.3;
-          },
-          hint: '语言应完整、通顺'
-        }
-      ]
-    },
-    {
-      category: '旁白匹配度',
-      items: [
-        {
-          name: '旁白内容与视频画面基本一致，能跟随画面变化进行说明',
-          maxScore: 1,
-          check: (text) => {
-            // Check coverage of key content areas
-            const areas = [
-              /内分泌腺|腺体/.test(text),     // Gland intro
-              /导管/.test(text),               // No duct
-              /血液|血管|毛细血管/.test(text), // Into blood
-              /循环|运输|传送/.test(text),      // Circulation
-              /靶细胞|靶/.test(text),           // Target cells
-              /钥匙|锁|比喻/.test(text)         // Metaphor
-            ];
-            const coverage = areas.filter(Boolean).length;
-            if (coverage >= 5) return 1;
-            if (coverage >= 4) return 0.5;
-            return 0;
-          },
-          hint: '配音应覆盖视频主要内容'
-        }
-      ]
-    },
-    {
-      category: '表达效果',
-      items: [
-        {
-          name: '语音清楚、语速适中，有一定感染力',
-          maxScore: 1,
-          check: (text) => {
-            const clean = text.replace(/\s/g, '');
-            const len = clean.length;
-            // Estimate speech duration based on character count (~4 chars/sec for Chinese)
-            const estimatedDuration = len / 4;
-            // Get actual video duration
-            const vidDur = silentVideo.duration || 60;
-            // Check if recording duration is reasonable
-            if (recordingDuration > 0) {
-              const ratio = recordingDuration / vidDur;
-              if (ratio < 0.3) return 0; // Too short
-              if (ratio > 2.5) return 0.3; // Too long
-              if (len < 30) return 0;
-              return 1;
-            }
-            // Fallback: check text length
-            if (len < 30) return 0;
-            if (len >= 50) return 1;
-            return 0.5;
-          },
-          hint: '语速应与视频节奏匹配'
-        }
-      ]
+  const wavBlob = recorder.stop();
+  try {
+    const audioBase64 = await blobToBase64(wavBlob);
+    const resp = await fetch('/api/asr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ audioBase64, format: 'wav' }),
+    });
+    const data = await resp.json();
+    if (data.ok && data.text && data.text.trim()) {
+      studentText = data.text.trim();
+      transcriptBox.style.display = 'block';
+      transcriptText.value = studentText;
+      recordStatus.textContent = '✅ 转写完成，可手动修正后提交评分';
+      scoreBtn.style.display = 'inline-flex';
+    } else {
+      recordStatus.textContent = '未识别到语音内容，请重新录制';
+      showToast(data.error || '未识别到语音内容', 'warn');
     }
-  ]
-};
-
-function calculateScore(text) {
-  const results = [];
-  let totalScore = 0;
-  let totalMax = 0;
-
-  for (const cat of SCORING.criteria) {
-    for (const item of cat.items) {
-      const score = item.check(text);
-      const rounded = Math.round(score * 10) / 10;
-      results.push({
-        category: cat.category,
-        name: item.name,
-        maxScore: item.maxScore,
-        score: rounded,
-        hint: item.hint
-      });
-      totalScore += rounded;
-      totalMax += item.maxScore;
-    }
+  } catch (err) {
+    console.error(err);
+    recordStatus.textContent = '转写失败';
+    showToast('转写请求失败: ' + err.message, 'error');
+  } finally {
+    recordBtn.disabled = false;
+    retryBtn.style.display = 'inline-flex';
   }
-
-  return { results, totalScore: Math.round(totalScore * 10) / 10, totalMax };
 }
 
-// ========== Display Score ==========
-function doScore() {
-  const text = fullTranscript.trim();
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// ========== Scoring (后端 AI) ==========
+async function doScore() {
+  const text = (transcriptText.value || '').trim();
   if (!text) {
     showToast('没有可评分的内容，请先录制配音', 'warn');
     return;
   }
+  scoreBtn.disabled = true;
+  scoreBtn.textContent = '🤖 AI 评分中...';
+  try {
+    const resp = await fetch('/api/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentText: text }),
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      renderScore(data.result);
+    } else {
+      showToast('评分失败: ' + data.error, 'error');
+    }
+  } catch (err) {
+    showToast('请求失败: ' + err.message, 'error');
+  } finally {
+    scoreBtn.disabled = false;
+    scoreBtn.textContent = '📊 提交 AI 评分';
+  }
+}
 
+function renderScore(result) {
   setStep(3);
-  const { results, totalScore, totalMax } = calculateScore(text);
+  const totalFull = result.totalFull || 10;
+  const totalScore = result.score ?? 0;
 
-  // Total score circle
   const circle = document.getElementById('totalScoreCircle');
   const numEl = document.getElementById('totalScoreNum');
-  const pct = totalScore / totalMax;
+  const pct = totalFull ? totalScore / totalFull : 0;
   let color = 'var(--danger)';
   if (pct >= 0.8) color = 'var(--success)';
   else if (pct >= 0.6) color = 'var(--warning)';
@@ -949,85 +607,80 @@ function doScore() {
   circle.style.border = `4px solid ${color}`;
   numEl.style.color = color;
 
-  // Animate number
   let current = 0;
-  const step = totalScore / 20;
+  const step = Math.max(totalScore / 20, 0.05);
   const timer = setInterval(() => {
     current += step;
-    if (current >= totalScore) {
-      current = totalScore;
-      clearInterval(timer);
-    }
+    if (current >= totalScore) { current = totalScore; clearInterval(timer); }
     numEl.textContent = current.toFixed(1);
   }, 30);
 
-  // Summary text
   const titleEl = document.getElementById('scoreTitle');
   const summaryEl = document.getElementById('scoreSummary');
-  if (pct >= 0.9) {
-    titleEl.textContent = '🎉 非常出色！';
-    summaryEl.textContent = '你的配音内容完整、表达准确，很好地覆盖了所有知识点！';
-  } else if (pct >= 0.7) {
-    titleEl.textContent = '👍 表现不错！';
-    summaryEl.textContent = '大部分知识点都涵盖到了，还有一些细节可以继续完善。';
-  } else if (pct >= 0.5) {
-    titleEl.textContent = '💪 继续加油！';
-    summaryEl.textContent = '已经掌握了一些要点，建议再看看参考台词，补充遗漏的内容。';
-  } else {
-    titleEl.textContent = '📚 多看多练！';
-    summaryEl.textContent = '建议先仔细观看有声视频，注意关键知识点的表述方式。';
-  }
+  if (pct >= 0.9) { titleEl.textContent = '🎉 非常出色！'; summaryEl.textContent = '配音内容完整、表达准确，覆盖了几乎所有知识点！'; }
+  else if (pct >= 0.7) { titleEl.textContent = '👍 表现不错！'; summaryEl.textContent = '大部分知识点都涵盖到了，还有细节可以完善。'; }
+  else if (pct >= 0.5) { titleEl.textContent = '💪 继续加油！'; summaryEl.textContent = '已掌握部分要点，建议再看参考台词补充遗漏内容。'; }
+  else { titleEl.textContent = '📚 多看多练！'; summaryEl.textContent = '建议先仔细观看有声视频，注意关键知识点的表述。'; }
 
-  // Build table
   const tbody = document.getElementById('scoreBody');
   tbody.innerHTML = '';
   let lastCategory = '';
-
-  for (const r of results) {
-    if (r.category !== lastCategory) {
+  (result.items || []).forEach((it) => {
+    if (it.dimension && it.dimension !== lastCategory) {
       const catRow = document.createElement('tr');
       catRow.className = 'category-row';
-      catRow.innerHTML = `<td colspan="4">${r.category}</td>`;
+      catRow.innerHTML = `<td colspan="4">${it.dimension}</td>`;
       tbody.appendChild(catRow);
-      lastCategory = r.category;
+      lastCategory = it.dimension;
     }
-
-    const pctItem = r.score / r.maxScore;
-    let barColor = 'var(--danger)';
-    let badgeClass = 'badge-zero';
-    let badgeText = '未达标';
-
-    if (pctItem >= 1) {
-      barColor = 'var(--success)';
-      badgeClass = 'badge-full';
-      badgeText = '达标';
-    } else if (pctItem >= 0.5) {
-      barColor = 'var(--warning)';
-      badgeClass = 'badge-partial';
-      badgeText = '部分达标';
-    }
+    const pctItem = it.full ? it.score / it.full : 0;
+    let badgeClass = 'badge-zero', badgeText = '未达标';
+    if (pctItem >= 1) { badgeClass = 'badge-full'; badgeText = '达标'; }
+    else if (pctItem >= 0.5) { badgeClass = 'badge-partial'; badgeText = '部分达标'; }
 
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td style="width:40%">${r.name}</td>
-      <td style="width:25%">
-        <span class="score-bar"><span class="score-bar-fill" style="width:${pctItem*100}%;background:${barColor}"></span></span>
-        ${r.score}/${r.maxScore}
-      </td>
-      <td style="width:15%"><span class="badge ${badgeClass}">${badgeText}</span></td>
-      <td style="width:20%;color:var(--text-muted);font-size:12px">${pctItem < 1 ? r.hint : ''}</td>
+      <td style="width:42%">${it.desc}${it.reason ? `<div class="reason">${it.reason}</div>` : ''}</td>
+      <td style="width:18%;color:var(--text-muted);font-size:12px">${it.dimension || ''}</td>
+      <td style="width:20%" class="score-cell">${it.score}/${it.full}</td>
+      <td style="width:20%"><span class="badge ${badgeClass}">${badgeText}</span></td>
     `;
     tbody.appendChild(row);
-  }
+  });
+
+  const commentBox = document.getElementById('commentBox');
+  if (result.comment) {
+    commentBox.style.display = 'block';
+    document.getElementById('commentText').textContent = result.comment;
+  } else commentBox.style.display = 'none';
+
+  renderList('errorsBox', 'errorsList', result.errors);
+  renderList('suggestionsBox', 'suggestionsList', result.suggestions);
 
   document.getElementById('scoreSection').classList.add('show');
   document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function renderList(boxId, listId, arr) {
+  const box = document.getElementById(boxId);
+  const list = document.getElementById(listId);
+  list.innerHTML = '';
+  if (arr && arr.length) {
+    box.style.display = 'block';
+    arr.forEach((s) => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      list.appendChild(li);
+    });
+  } else {
+    box.style.display = 'none';
+  }
+}
+
 function doRetry() {
-  fullTranscript = '';
-  interimTranscript = '';
-  transcriptText.innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待录音...</span>';
+  studentText = '';
+  transcriptText.value = '';
+  transcriptBox.style.display = 'none';
   scoreBtn.style.display = 'none';
   retryBtn.style.display = 'none';
   document.getElementById('scoreSection').classList.remove('show');
@@ -1035,17 +688,16 @@ function doRetry() {
   recordStatus.classList.remove('recording-text');
   silentVideo.currentTime = 0;
   setStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ========== Init ==========
-// Update video duration hint
 silentVideo.addEventListener('loadedmetadata', function() {
   const dur = Math.round(silentVideo.duration);
-  document.querySelector('#dubCard .video-hint').textContent = 
+  document.querySelector('#dubCard .video-hint').textContent =
     `🎙 视频时长 ${dur} 秒，点击下方录音按钮开始配音`;
 });
 
-// When sound video ends, prompt to try dubbing
 soundVideo.addEventListener('ended', function() {
   showToast('学习完成！现在可以试试为无声视频配音', 'success');
   setStep(2);

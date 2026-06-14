@@ -44,7 +44,8 @@ ${rubricLines}
 - 逐项打分，每项得分必须是 0 到该项满分之间的整数。
 - 严格依据视频原文判断科学内容是否准确，宁严勿松，错误概念不给分。
 - 学生讲述是语音转写文字，可能有少量错别字，不因转写噪声扣分。
-- "旁白匹配度""表达效果"等无法从文字完全判断的项，按讲述完整度和条理性合理给分。
+- "旁白匹配度"按讲述完整度和条理性合理给分。
+- "表达效果（key=delivery，语音清楚、语速适中）"无法从文字判断，固定给满分。
 - score 为各项得分之和。
 
 严格只输出 JSON，不要 markdown 代码块标记，格式：
@@ -91,12 +92,23 @@ ${rubricLines}
 
   // 补全每项的 dimension/desc，方便前端展示
   const rubricMap = Object.fromEntries(RUBRIC.map((r) => [r.key, r]));
-  parsed.items = (parsed.items || []).map((it) => ({
-    ...it,
-    dimension: rubricMap[it.key]?.dimension || '',
-    desc: rubricMap[it.key]?.desc || it.key,
-    full: rubricMap[it.key]?.full ?? it.full,
-  }));
+  parsed.items = (parsed.items || []).map((it) => {
+    const r = rubricMap[it.key];
+    let score = it.score;
+    // 表达效果（语速/语音清楚）无法从文字判断，固定给满分
+    if (it.key === 'delivery') {
+      score = r?.full ?? it.full;
+    }
+    return {
+      ...it,
+      score,
+      dimension: r?.dimension || '',
+      desc: r?.desc || it.key,
+      full: r?.full ?? it.full,
+    };
+  });
+  // 重算总分
+  parsed.score = parsed.items.reduce((s, it) => s + (it.score || 0), 0);
   parsed.totalFull = TOTAL_FULL;
   return parsed;
 }
