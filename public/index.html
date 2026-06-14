@@ -1,52 +1,1056 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生物视频理解 · 语音讲述评分</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI配音评分 - 内分泌腺与激素</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background decoration */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(34,197,94,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 32px 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(99,102,241,0.3);
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Steps */
+  .steps {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    background: var(--card);
+    border: 2px solid var(--border);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .step .num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.3s;
+  }
+  .step.active {
+    border-color: var(--primary);
+    background: rgba(99,102,241,0.15);
+  }
+  .step.active .num {
+    background: var(--primary);
+  }
+  .step.done {
+    border-color: var(--success);
+    background: rgba(34,197,94,0.1);
+  }
+  .step.done .num {
+    background: var(--success);
+  }
+
+  /* Video Section */
+  .video-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 768px) {
+    .video-section { grid-template-columns: 1fr; }
+  }
+
+  .video-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .video-card.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(99,102,241,0.2);
+  }
+  .video-card-label {
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.2);
+  }
+  .video-card-label .icon { font-size: 20px; }
+  video {
+    width: 100%;
+    display: block;
+    background: #000;
+    cursor: pointer;
+  }
+  .video-hint {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: rgba(0,0,0,0.1);
+  }
+
+  /* Record Section */
+  .record-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 28px;
+    border: 2px solid var(--border);
+    text-align: center;
+  }
+  .record-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .record-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 4px solid var(--danger);
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .record-btn::before {
+    content: '';
+    width: 36px;
+    height: 36px;
+    background: var(--danger);
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+  .record-btn.recording::before {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+  }
+  .record-btn.recording {
+    animation: pulse-ring 1.5s infinite;
+  }
+  .record-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    70% { box-shadow: 0 0 0 20px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+
+  .record-status {
+    font-size: 15px;
+    color: var(--text-muted);
+    min-height: 24px;
+    margin-bottom: 16px;
+  }
+  .record-status.recording-text {
+    color: var(--danger);
+    font-weight: 600;
+  }
+
+  /* Transcript */
+  .transcript-box {
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    text-align: left;
+    min-height: 80px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    position: relative;
+  }
+  .transcript-box .placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .transcript-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 8px;
+  }
+
+  /* Score Section */
+  .score-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 2px solid var(--border);
+    display: none;
+  }
+  .score-section.show { display: block; }
+
+  .score-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .total-score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .total-score-circle .score-num {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .total-score-circle .score-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .score-summary-text {
+    text-align: left;
+  }
+  .score-summary-text h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .score-summary-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Score detail table */
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+  .score-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  .score-table td {
+    padding: 12px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: middle;
+  }
+  .score-table tr:last-child td { border-bottom: none; }
+  .score-table .category-row td {
+    font-weight: 700;
+    color: var(--primary-light);
+    padding-top: 16px;
+    font-size: 15px;
+  }
+
+  .score-bar {
+    width: 60px;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-full { background: rgba(34,197,94,0.2); color: var(--success); }
+  .badge-partial { background: rgba(245,158,11,0.2); color: var(--warning); }
+  .badge-zero { background: rgba(239,68,68,0.2); color: var(--danger); }
+
+  /* Reference text */
+  .reference-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    border: 2px solid var(--border);
+  }
+  .reference-section h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: var(--primary-light);
+  }
+  .reference-text {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    border-radius: 100px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary-light); }
+
+  .action-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.warn { border-color: var(--warning); color: var(--warning); }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
+  .toast.success { border-color: var(--success); color: var(--success); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 22px; }
+    .score-header { flex-direction: column; gap: 16px; }
+    .container { padding: 12px 12px 40px; }
+  }
+
+  /* Score animation */
+  @keyframes scoreIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-section.show { animation: scoreIn 0.4s ease; }
+
+  /* Highlight matched keywords */
+  .highlight {
+    background: rgba(99,102,241,0.3);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--primary-light);
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🧬 生物视频理解 · 语音讲述评分</h1>
 
-    <section class="card">
-      <h2>① 视频内容（内分泌与激素）</h2>
-      <p class="video-text">内分泌腺没有导管，它们分泌的激素进入腺体内的毛细血管，随着循环系统传送到身体各处，直到碰到特定的组织细胞，我们把这些细胞叫做激素的靶细胞，就像一把钥匙只能开一把锁那样，不是该激素的靶细胞不会受到这种激素的影响。</p>
-    </section>
-
-    <section class="card">
-      <h2>② 学生语音讲述（中文）</h2>
-      <div class="controls">
-        <button id="recordBtn">🎤 开始录音</button>
-        <span id="status" class="status">未开始</span>
-      </div>
-      <textarea id="studentText" rows="5" placeholder="点击录音说出你对视频的理解，转写文字会显示在这里，也可手动修改..."></textarea>
-    </section>
-
-    <section class="card">
-      <button id="evalBtn" class="primary">③ 提交 AI 评分</button>
-    </section>
-
-    <section class="card result hidden" id="resultCard">
-      <h2>📊 评分结果</h2>
-      <div class="score-box">总分：<span id="score">--</span> / <span id="totalFull">10</span></div>
-      <table class="rubric-table">
-        <thead>
-          <tr><th>评价指标</th><th>得分</th></tr>
-        </thead>
-        <tbody id="rubricBody"></tbody>
-      </table>
-      <h3>整体点评</h3>
-      <p id="comment"></p>
-      <h3>科学性错误</h3>
-      <ul id="errors"></ul>
-      <h3>改进建议</h3>
-      <ul id="suggestions"></ul>
-    </section>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🎬 AI 配音评分系统</h1>
+    <p>内分泌腺与激素 — 看视频 · 学配音 · 智能评分</p>
   </div>
 
-  <script src="recorder.js"></script>
-  <script src="app.js"></script>
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step active" id="step1">
+      <span class="num">1</span> 观看学习
+    </div>
+    <div class="step" id="step2">
+      <span class="num">2</span> 录制配音
+    </div>
+    <div class="step" id="step3">
+      <span class="num">3</span> 查看评分
+    </div>
+  </div>
+
+  <!-- Reference Text -->
+  <div class="reference-section">
+    <h4>📖 参考台词</h4>
+    <div class="reference-text">
+      内分泌腺没有导管，它们分泌的激素进入腺体内的毛细血管，随着循环系统传送到身体各处，直到碰到特定的组织细胞，我们把这些细胞叫做激素的靶细胞，就像一把钥匙只能开一把锁那样，不是该激素的靶细胞不会受到这种激素的影响。
+    </div>
+  </div>
+
+  <!-- Video Section -->
+  <div class="video-section">
+    <div class="video-card active" id="learnCard">
+      <div class="video-card-label"><span class="icon">🔊</span> 有声视频 · 学习观摩</div>
+      <video id="soundVideo" controls playsinline>
+        <source src="有声视频.mp4" type="video/mp4">
+        您的浏览器不支持视频播放
+      </video>
+      <div class="video-hint">▶ 点击播放，先认真听配音内容，学习表达方式</div>
+    </div>
+    <div class="video-card" id="dubCard">
+      <div class="video-card-label"><span class="icon">🔇</span> 无声视频 · 配音练习</div>
+      <video id="silentVideo" muted playsinline>
+        <source src="无声视频.mp4" type="video/mp4">
+        您的浏览器不支持视频播放
+      </video>
+      <div class="video-hint">🎙 点击下方录音按钮，边看边为无声视频配音</div>
+    </div>
+  </div>
+
+  <!-- Record Section -->
+  <div class="record-section" id="recordSection">
+    <h3>🎙️ 开始你的配音</h3>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+      点击录音后，无声视频将同步播放。请边看画面边进行配音。
+    </p>
+    <button class="record-btn" id="recordBtn" title="点击开始录音"></button>
+    <div class="record-status" id="recordStatus">点击红色按钮开始录音</div>
+
+    <div class="transcript-box" id="transcriptBox" style="display:none;">
+      <div class="transcript-label">📝 语音识别结果</div>
+      <div id="transcriptText"></div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" id="scoreBtn" style="display:none;" onclick="doScore()">📊 查看评分</button>
+      <button class="btn btn-outline" id="retryBtn" style="display:none;" onclick="doRetry()">🔄 重新录制</button>
+    </div>
+  </div>
+
+  <!-- Score Section -->
+  <div class="score-section" id="scoreSection">
+    <div class="score-header">
+      <div class="total-score-circle" id="totalScoreCircle">
+        <span class="score-num" id="totalScoreNum">0</span>
+        <span class="score-label">/ 10 分</span>
+      </div>
+      <div class="score-summary-text">
+        <h3 id="scoreTitle">评分结果</h3>
+        <p id="scoreSummary"></p>
+      </div>
+    </div>
+    <table class="score-table" id="scoreTable">
+      <thead>
+        <tr>
+          <th>评价内容</th>
+          <th>评价指标</th>
+          <th>得分</th>
+          <th>结果</th>
+        </tr>
+      </thead>
+      <tbody id="scoreBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== State ==========
+let isRecording = false;
+let mediaRecorder = null;
+let recognition = null;
+let fullTranscript = '';
+let interimTranscript = '';
+let recordingStartTime = 0;
+let recordingDuration = 0;
+const videoDuration = 60; // approximate, will be updated
+
+const silentVideo = document.getElementById('silentVideo');
+const soundVideo = document.getElementById('soundVideo');
+const recordBtn = document.getElementById('recordBtn');
+const recordStatus = document.getElementById('recordStatus');
+const transcriptBox = document.getElementById('transcriptBox');
+const transcriptText = document.getElementById('transcriptText');
+const scoreBtn = document.getElementById('scoreBtn');
+const retryBtn = document.getElementById('retryBtn');
+
+// ========== Step Management ==========
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+  // Highlight active video card
+  document.getElementById('learnCard').classList.toggle('active', n === 1);
+  document.getElementById('dubCard').classList.toggle('active', n === 2);
+}
+
+// ========== Toast ==========
+function showToast(msg, type = 'warn') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ========== Recording ==========
+recordBtn.addEventListener('click', function() {
+  if (!isRecording) {
+    startRecording();
+  } else {
+    stopRecording();
+  }
+});
+
+async function startRecording() {
+  // Check browser support
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('当前浏览器不支持语音识别，请使用 Chrome 浏览器', 'error');
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+
+    // Setup speech recognition
+    recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    fullTranscript = '';
+    interimTranscript = '';
+
+    recognition.onresult = function(event) {
+      let interim = '';
+      let final = '';
+      for (let i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          final += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      if (final) fullTranscript += final;
+      interimTranscript = interim;
+      updateTranscriptDisplay();
+    };
+
+    recognition.onerror = function(event) {
+      if (event.error === 'no-speech') return;
+      console.warn('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed') {
+        showToast('麦克风权限被拒绝，请允许浏览器使用麦克风', 'error');
+        stopRecording();
+      }
+    };
+
+    recognition.onend = function() {
+      // Auto-restart if still recording
+      if (isRecording) {
+        try { recognition.start(); } catch(e) {}
+      }
+    };
+
+    // Start
+    recognition.start();
+    mediaRecorder.start();
+
+    isRecording = true;
+    recordingStartTime = Date.now();
+    recordBtn.classList.add('recording');
+    recordStatus.textContent = '🔴 录音中...点击按钮停止';
+    recordStatus.classList.add('recording-text');
+    transcriptBox.style.display = 'block';
+    scoreBtn.style.display = 'none';
+    retryBtn.style.display = 'none';
+    setStep(2);
+
+    // Play silent video
+    silentVideo.currentTime = 0;
+    silentVideo.muted = true;
+    silentVideo.play();
+
+    // Stop when video ends
+    silentVideo.onended = function() {
+      if (isRecording) {
+        showToast('视频播放结束，录音自动停止', 'success');
+        stopRecording();
+      }
+    };
+
+    // Pause the sound video if playing
+    soundVideo.pause();
+
+  } catch (err) {
+    console.error(err);
+    showToast('无法访问麦克风，请检查权限设置', 'error');
+  }
+}
+
+function stopRecording() {
+  isRecording = false;
+  recordingDuration = (Date.now() - recordingStartTime) / 1000;
+
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+
+  recordBtn.classList.remove('recording');
+  recordStatus.textContent = '✅ 录音完成';
+  recordStatus.classList.remove('recording-text');
+  silentVideo.pause();
+
+  if (fullTranscript.trim()) {
+    scoreBtn.style.display = 'inline-flex';
+  } else {
+    showToast('未识别到语音内容，请重新录制', 'warn');
+  }
+  retryBtn.style.display = 'inline-flex';
+}
+
+function updateTranscriptDisplay() {
+  let html = fullTranscript;
+  if (interimTranscript) {
+    html += '<span style="color:var(--text-muted);font-style:italic;">' + interimTranscript + '</span>';
+  }
+  if (!html.trim()) {
+    html = '<span style="color:var(--text-muted);font-style:italic;">正在识别语音...</span>';
+  }
+  transcriptText.innerHTML = html;
+}
+
+// ========== Scoring Engine ==========
+const SCORING = {
+  criteria: [
+    {
+      category: '科学内容',
+      items: [
+        {
+          name: '能准确说明内分泌腺没有导管',
+          maxScore: 1,
+          check: (text) => {
+            const hasGland = /内分泌腺/.test(text);
+            const noDuct = /没有导管|无导管|不经导管|不通过导管|没有.*导管/.test(text);
+            return hasGland && noDuct ? 1 : 0;
+          },
+          hint: '需提到"内分泌腺"和"没有导管"'
+        },
+        {
+          name: '能准确说明激素直接进入血液',
+          maxScore: 1,
+          check: (text) => {
+            const hasHormone = /激素/.test(text);
+            const intoBlood = /进入.*(血液|毛细血管|血管)|直接.*(血液|毛细血管)/.test(text);
+            return hasHormone && intoBlood ? 1 : 0;
+          },
+          hint: '需提到"激素"和"进入血液/毛细血管"'
+        },
+        {
+          name: '能准确说明激素随血液循环运输到全身各处',
+          maxScore: 1,
+          check: (text) => {
+            const circulation = /血液循环|循环系统|随.*循环/.test(text);
+            const transport = /运输|传送|运送|到达|到.*全身|到.*各处/.test(text);
+            const wholeBody = /全身|各处|身体.*各处/.test(text);
+            if (circulation && (transport || wholeBody)) return 1;
+            if (circulation && wholeBody) return 1;
+            if (transport && wholeBody) return 0.5;
+            return 0;
+          },
+          hint: '需提到"血液循环"和"运输到全身各处"'
+        },
+        {
+          name: '能准确说明激素只作用于靶细胞',
+          maxScore: 2,
+          check: (text) => {
+            const hasTarget = /靶细胞/.test(text);
+            const specificity = /特定|专一|只.*作用|专门|对应|只能/.test(text);
+            const notAffected = /不是.*靶细胞.*不受|不会受到|不会.*影响/.test(text);
+            if (hasTarget && specificity && notAffected) return 2;
+            if (hasTarget && specificity) return 1.5;
+            if (hasTarget) return 1;
+            if (specificity) return 0.5;
+            return 0;
+          },
+          hint: '需提到"靶细胞"和"特异性/只作用于"'
+        },
+        {
+          name: '能用"钥匙和锁"等恰当比喻解释对应关系',
+          maxScore: 1,
+          check: (text) => {
+            const keyLock = /钥匙.*锁|锁.*钥匙|一把钥匙.*一把锁/.test(text);
+            const otherMetaphor = /就像|好比|如同|相当于|仿佛/.test(text) && !keyLock;
+            if (keyLock) return 1;
+            if (otherMetaphor) return 0.5;
+            return 0;
+          },
+          hint: '使用"钥匙和锁"比喻'
+        }
+      ]
+    },
+    {
+      category: '词汇与语言',
+      items: [
+        {
+          name: '能正确使用"内分泌腺、激素、血液循环、靶细胞"等关键词',
+          maxScore: 1,
+          check: (text) => {
+            const keywords = ['内分泌腺', '激素', '血液循环', '靶细胞'];
+            const found = keywords.filter(k => text.includes(k)).length;
+            if (found >= 4) return 1;
+            if (found >= 3) return 0.5;
+            return 0;
+          },
+          hint: '需使用4个核心关键词'
+        },
+        {
+          name: '语言表达准确、通顺',
+          maxScore: 1,
+          check: (text) => {
+            // Remove spaces
+            const clean = text.replace(/\s/g, '');
+            const len = clean.length;
+            // Check for reasonable length and structure
+            if (len < 20) return 0;
+            if (len < 40) return 0.3;
+            // Check for sentence-ending punctuation (。！？)
+            const hasSentences = /[。！？，、；]/.test(text);
+            // Check for grammatical coherence (basic)
+            const hasSubject = /内分泌腺|激素|它们|这/.test(text);
+            if (hasSentences && hasSubject && len >= 40) return 1;
+            if (hasSentences || hasSubject) return 0.5;
+            return 0.3;
+          },
+          hint: '语言应完整、通顺'
+        }
+      ]
+    },
+    {
+      category: '旁白匹配度',
+      items: [
+        {
+          name: '旁白内容与视频画面基本一致，能跟随画面变化进行说明',
+          maxScore: 1,
+          check: (text) => {
+            // Check coverage of key content areas
+            const areas = [
+              /内分泌腺|腺体/.test(text),     // Gland intro
+              /导管/.test(text),               // No duct
+              /血液|血管|毛细血管/.test(text), // Into blood
+              /循环|运输|传送/.test(text),      // Circulation
+              /靶细胞|靶/.test(text),           // Target cells
+              /钥匙|锁|比喻/.test(text)         // Metaphor
+            ];
+            const coverage = areas.filter(Boolean).length;
+            if (coverage >= 5) return 1;
+            if (coverage >= 4) return 0.5;
+            return 0;
+          },
+          hint: '配音应覆盖视频主要内容'
+        }
+      ]
+    },
+    {
+      category: '表达效果',
+      items: [
+        {
+          name: '语音清楚、语速适中，有一定感染力',
+          maxScore: 1,
+          check: (text) => {
+            const clean = text.replace(/\s/g, '');
+            const len = clean.length;
+            // Estimate speech duration based on character count (~4 chars/sec for Chinese)
+            const estimatedDuration = len / 4;
+            // Get actual video duration
+            const vidDur = silentVideo.duration || 60;
+            // Check if recording duration is reasonable
+            if (recordingDuration > 0) {
+              const ratio = recordingDuration / vidDur;
+              if (ratio < 0.3) return 0; // Too short
+              if (ratio > 2.5) return 0.3; // Too long
+              if (len < 30) return 0;
+              return 1;
+            }
+            // Fallback: check text length
+            if (len < 30) return 0;
+            if (len >= 50) return 1;
+            return 0.5;
+          },
+          hint: '语速应与视频节奏匹配'
+        }
+      ]
+    }
+  ]
+};
+
+function calculateScore(text) {
+  const results = [];
+  let totalScore = 0;
+  let totalMax = 0;
+
+  for (const cat of SCORING.criteria) {
+    for (const item of cat.items) {
+      const score = item.check(text);
+      const rounded = Math.round(score * 10) / 10;
+      results.push({
+        category: cat.category,
+        name: item.name,
+        maxScore: item.maxScore,
+        score: rounded,
+        hint: item.hint
+      });
+      totalScore += rounded;
+      totalMax += item.maxScore;
+    }
+  }
+
+  return { results, totalScore: Math.round(totalScore * 10) / 10, totalMax };
+}
+
+// ========== Display Score ==========
+function doScore() {
+  const text = fullTranscript.trim();
+  if (!text) {
+    showToast('没有可评分的内容，请先录制配音', 'warn');
+    return;
+  }
+
+  setStep(3);
+  const { results, totalScore, totalMax } = calculateScore(text);
+
+  // Total score circle
+  const circle = document.getElementById('totalScoreCircle');
+  const numEl = document.getElementById('totalScoreNum');
+  const pct = totalScore / totalMax;
+  let color = 'var(--danger)';
+  if (pct >= 0.8) color = 'var(--success)';
+  else if (pct >= 0.6) color = 'var(--warning)';
+
+  circle.style.background = `conic-gradient(${color} ${pct * 360}deg, rgba(255,255,255,0.1) 0deg)`;
+  circle.style.border = `4px solid ${color}`;
+  numEl.style.color = color;
+
+  // Animate number
+  let current = 0;
+  const step = totalScore / 20;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= totalScore) {
+      current = totalScore;
+      clearInterval(timer);
+    }
+    numEl.textContent = current.toFixed(1);
+  }, 30);
+
+  // Summary text
+  const titleEl = document.getElementById('scoreTitle');
+  const summaryEl = document.getElementById('scoreSummary');
+  if (pct >= 0.9) {
+    titleEl.textContent = '🎉 非常出色！';
+    summaryEl.textContent = '你的配音内容完整、表达准确，很好地覆盖了所有知识点！';
+  } else if (pct >= 0.7) {
+    titleEl.textContent = '👍 表现不错！';
+    summaryEl.textContent = '大部分知识点都涵盖到了，还有一些细节可以继续完善。';
+  } else if (pct >= 0.5) {
+    titleEl.textContent = '💪 继续加油！';
+    summaryEl.textContent = '已经掌握了一些要点，建议再看看参考台词，补充遗漏的内容。';
+  } else {
+    titleEl.textContent = '📚 多看多练！';
+    summaryEl.textContent = '建议先仔细观看有声视频，注意关键知识点的表述方式。';
+  }
+
+  // Build table
+  const tbody = document.getElementById('scoreBody');
+  tbody.innerHTML = '';
+  let lastCategory = '';
+
+  for (const r of results) {
+    if (r.category !== lastCategory) {
+      const catRow = document.createElement('tr');
+      catRow.className = 'category-row';
+      catRow.innerHTML = `<td colspan="4">${r.category}</td>`;
+      tbody.appendChild(catRow);
+      lastCategory = r.category;
+    }
+
+    const pctItem = r.score / r.maxScore;
+    let barColor = 'var(--danger)';
+    let badgeClass = 'badge-zero';
+    let badgeText = '未达标';
+
+    if (pctItem >= 1) {
+      barColor = 'var(--success)';
+      badgeClass = 'badge-full';
+      badgeText = '达标';
+    } else if (pctItem >= 0.5) {
+      barColor = 'var(--warning)';
+      badgeClass = 'badge-partial';
+      badgeText = '部分达标';
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="width:40%">${r.name}</td>
+      <td style="width:25%">
+        <span class="score-bar"><span class="score-bar-fill" style="width:${pctItem*100}%;background:${barColor}"></span></span>
+        ${r.score}/${r.maxScore}
+      </td>
+      <td style="width:15%"><span class="badge ${badgeClass}">${badgeText}</span></td>
+      <td style="width:20%;color:var(--text-muted);font-size:12px">${pctItem < 1 ? r.hint : ''}</td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  document.getElementById('scoreSection').classList.add('show');
+  document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function doRetry() {
+  fullTranscript = '';
+  interimTranscript = '';
+  transcriptText.innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待录音...</span>';
+  scoreBtn.style.display = 'none';
+  retryBtn.style.display = 'none';
+  document.getElementById('scoreSection').classList.remove('show');
+  recordStatus.textContent = '点击红色按钮开始录音';
+  recordStatus.classList.remove('recording-text');
+  silentVideo.currentTime = 0;
+  setStep(1);
+}
+
+// ========== Init ==========
+// Update video duration hint
+silentVideo.addEventListener('loadedmetadata', function() {
+  const dur = Math.round(silentVideo.duration);
+  document.querySelector('#dubCard .video-hint').textContent = 
+    `🎙 视频时长 ${dur} 秒，点击下方录音按钮开始配音`;
+});
+
+// When sound video ends, prompt to try dubbing
+soundVideo.addEventListener('ended', function() {
+  showToast('学习完成！现在可以试试为无声视频配音', 'success');
+  setStep(2);
+});
+</script>
+
 </body>
 </html>
