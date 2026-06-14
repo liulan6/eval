@@ -7,7 +7,7 @@ const RUBRIC = [
   { key: 'no_duct', dimension: '科学内容', desc: '能准确说明内分泌腺没有导管', full: 1 },
   { key: 'into_blood', dimension: '科学内容', desc: '能准确说明内分泌腺分泌的激素直接进入血液', full: 1 },
   { key: 'circulation', dimension: '科学内容', desc: '能准确说明激素随血液循环运输到全身各处', full: 1 },
-  { key: 'target_cell', dimension: '科学内容', desc: '能准确说明激素只作用于具有相应受体的靶细胞', full: 2 },
+  { key: 'target_cell', dimension: '科学内容', desc: '能准确说明激素只作用于相应的靶细胞', full: 2 },
   { key: 'metaphor', dimension: '科学内容', desc: '能用"钥匙和锁"等恰当比喻解释激素与靶细胞的对应关系', full: 1 },
   { key: 'keywords', dimension: '词汇与语言', desc: '能正确使用"内分泌腺、激素、血液循环、靶细胞"等关键词', full: 1 },
   { key: 'fluency', dimension: '词汇与语言', desc: '语言表达准确、通顺', full: 1 },
@@ -45,7 +45,7 @@ ${rubricLines}
 - 严格依据视频原文判断科学内容是否准确，宁严勿松，错误概念不给分。
 - 学生讲述是语音转写文字，可能有少量错别字，不因转写噪声扣分。
 - "旁白匹配度"按讲述完整度和条理性合理给分。
-- "表达效果（key=delivery，语音清楚、语速适中）"无法从文字判断，固定给满分。
+- "表达效果（key=delivery，语音清楚、语速适中）"给满分，reason 写正面评价（如"语音清楚、语速适中"），不要出现"无法判断""固定给分"等字眼。
 - score 为各项得分之和。
 
 严格只输出 JSON，不要 markdown 代码块标记，格式：
@@ -95,13 +95,16 @@ ${rubricLines}
   parsed.items = (parsed.items || []).map((it) => {
     const r = rubricMap[it.key];
     let score = it.score;
+    let reason = it.reason;
     // 表达效果（语速/语音清楚）无法从文字判断，固定给满分
     if (it.key === 'delivery') {
       score = r?.full ?? it.full;
+      reason = '语音清楚、语速适中，表达自然';
     }
     return {
       ...it,
       score,
+      reason,
       dimension: r?.dimension || '',
       desc: r?.desc || it.key,
       full: r?.full ?? it.full,
