@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生物视频理解 · 语音讲述评分</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧬 生物视频理解 · 语音讲述评分</h1>
+
+    <section class="card">
+      <h2>① 视频英文原文描述</h2>
+      <textarea id="videoText" rows="6" placeholder="粘贴这段生物教学视频的英文文字描述...">The mitochondria is the powerhouse of the cell. It generates most of the cell's supply of ATP through cellular respiration, using oxygen and glucose to produce energy.</textarea>
+    </section>
+
+    <section class="card">
+      <h2>② 学生语音讲述（中文）</h2>
+      <div class="controls">
+        <button id="recordBtn">🎤 开始录音</button>
+        <span id="status" class="status">未开始</span>
+      </div>
+      <textarea id="studentText" rows="5" placeholder="点击录音说出你对视频的理解，转写文字会显示在这里，也可手动修改..."></textarea>
+    </section>
+
+    <section class="card">
+      <button id="evalBtn" class="primary">③ 提交 AI 评分</button>
+    </section>
+
+    <section class="card result hidden" id="resultCard">
+      <h2>📊 评分结果</h2>
+      <div class="score-box">总分：<span id="score">--</span></div>
+      <div id="dimensions" class="dimensions"></div>
+      <h3>整体点评</h3>
+      <p id="comment"></p>
+      <h3>科学性错误</h3>
+      <ul id="errors"></ul>
+      <h3>改进建议</h3>
+      <ul id="suggestions"></ul>
+    </section>
+  </div>
+
+  <script src="recorder.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "biology-speaking-eval",
+  "version": "1.0.0",
+  "description": "学生语音讲述生物视频理解，百度ASR转文字 + DeepSeek评分平台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "form-data": "^4.0.6"
+  }
+}
