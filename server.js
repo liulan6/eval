@@ -31,11 +31,11 @@ app.post('/api/asr', async (req, res) => {
 // 2. AI 评分：视频原文与评分标准已固化在后端，只需传学生讲述文字
 app.post('/api/evaluate', async (req, res) => {
   try {
-    const { studentText } = req.body;
+    const { studentText, provider } = req.body;
     if (!studentText) {
       return res.status(400).json({ ok: false, error: '缺少 studentText' });
     }
-    const result = await evaluate(studentText);
+    const result = await evaluate(studentText, provider === 'deepseek' ? 'deepseek' : 'glm');
     res.json({ ok: true, result });
   } catch (err) {
     console.error('Evaluate error:', err.message);

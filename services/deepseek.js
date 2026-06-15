@@ -22,11 +22,22 @@ const TOTAL_FULL = RUBRIC.reduce((s, r) => s + r.full, 0); // 10
  * @param {string} studentText 学生中文讲述（已转文字）
  * @returns {Promise<object>}
  */
-async function evaluate(studentText) {
-  const { DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL } = process.env;
-  if (!DEEPSEEK_API_KEY) {
-    throw new Error('未配置 DEEPSEEK_API_KEY');
+async function evaluate(studentText, provider = 'glm') {
+  // 默认走 GLM；provider==='deepseek' 时走 DeepSeek 官网
+  let apiKey, baseUrl, model;
+  if (provider === 'deepseek') {
+    apiKey = process.env.DS_API_KEY || process.env.DEEPSEEK_API_KEY;
+    baseUrl = process.env.DS_BASE_URL || 'https://api.deepseek.com';
+    model = process.env.DS_MODEL || 'deepseek-chat';
+  } else {
+    apiKey = process.env.DEEPSEEK_API_KEY;
+    baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+    model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
   }
+  if (!apiKey) {
+    throw new Error('未配置评分模型 API Key');
+  }
+  const DEEPSEEK_API_KEY = apiKey;
 
   const rubricLines = RUBRIC.map(
     (r, i) => `${i + 1}. [key=${r.key}] ${r.dimension} | ${r.desc} | 满分 ${r.full}`
@@ -61,10 +72,12 @@ ${rubricLines}
 
   const userPrompt = `【学生中文讲述】\n${studentText}\n\n请按上述评分标准逐项打分。`;
 
+  console.log('[评分] provider=%s, baseUrl=%s, model=%s', provider, baseUrl, model);
+
   const resp = await axios.post(
-    `${DEEPSEEK_BASE_URL || 'https://api.deepseek.com'}/chat/completions`,
+    `${baseUrl}/chat/completions`,
     {
-      model: DEEPSEEK_MODEL || 'deepseek-chat',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
