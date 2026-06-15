@@ -229,8 +229,16 @@
     justify-content: center;
     position: relative;
   }
-  .total-score-circle .score-num { font-size: 40px; font-weight: 800; line-height: 1; }
-  .total-score-circle .score-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .total-score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: var(--card);
+    z-index: 0;
+  }
+  .total-score-circle .score-num { font-size: 40px; font-weight: 800; line-height: 1; position: relative; z-index: 1; }
+  .total-score-circle .score-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; position: relative; z-index: 1; }
 
   .score-summary-text { text-align: left; max-width: 420px; }
   .score-summary-text h3 { font-size: 20px; margin-bottom: 8px; }
@@ -573,12 +581,12 @@ function setStep(n) {
 }
 
 // ========== Toast ==========
-function showToast(msg, type = 'warn') {
+function showToast(msg, type = 'warn', duration = 3000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + type;
   setTimeout(() => t.classList.add('show'), 10);
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // ========== Recording ==========
@@ -673,21 +681,32 @@ async function doScore() {
   scoreBtn.disabled = true;
   scoreBtn.textContent = '🤖 AI 评分中...';
   showAiLoading();
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), 60000);
   try {
     const resp = await fetch('/api/evaluate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ studentText: text, provider: window.__useDeepSeek ? 'deepseek' : 'glm' }),
+      signal: ctrl.signal,
     });
     const data = await resp.json();
     if (data.ok) {
       renderScore(data.result);
     } else {
-      showToast('评分失败: ' + data.error, 'error');
+      const msg = /429|速率|频率|rate/i.test(data.error || '')
+        ? 'AI 当前访问人数较多，请稍等几秒再试 🙏'
+        : '评分失败：' + (data.error || '未知错误');
+      showToast(msg, 'warn', 5000);
     }
   } catch (err) {
-    showToast('请求失败: ' + err.message, 'error');
+    if (err.name === 'AbortError') {
+      showToast('AI 思考时间有点长，可能是网络较慢，请重试一次 ⏳', 'warn', 5000);
+    } else {
+      showToast('网络请求失败，请检查网络后重试', 'error', 5000);
+    }
   } finally {
+    clearTimeout(timeoutId);
     hideAiLoading();
     scoreBtn.disabled = false;
     scoreBtn.textContent = '📊 提交 AI 评分';
