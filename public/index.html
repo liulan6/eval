@@ -286,22 +286,50 @@
   .comment-box ul { margin: 6px 0 0 18px; }
   .comment-box li { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
 
-  .reference-section {
+  .draft-section {
     background: var(--card);
     border-radius: var(--radius);
     padding: 20px 24px;
     margin-bottom: 28px;
     border: 2px solid var(--border);
   }
-  .reference-section h4 { font-size: 15px; margin-bottom: 10px; color: var(--primary-light); }
-  .reference-text {
-    font-size: 14px;
-    line-height: 2;
+  .draft-section h4 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .draft-tag {
+    font-size: 11px;
+    font-weight: 500;
     color: var(--text-muted);
-    padding: 12px 16px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 2px 10px;
+    border-radius: 100px;
+  }
+  .draft-text {
+    width: 100%;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    padding: 14px 16px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
     border-left: 3px solid var(--primary);
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .draft-text::placeholder { color: var(--text-muted); }
+  .draft-text:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
   }
 
   .btn {
@@ -457,30 +485,28 @@
     <div class="step" id="step3"><span class="num">3</span> 查看评分</div>
   </div>
 
-  <div class="reference-section">
-    <h4>📖 参考台词</h4>
-    <div class="reference-text">
-      内分泌腺没有导管，它们分泌的激素进入腺体内的毛细血管，随着循环系统传送到身体各处，直到碰到特定的组织细胞，我们把这些细胞叫做激素的靶细胞，就像一把钥匙只能开一把锁那样，不是该激素的靶细胞不会受到这种激素的影响。
-    </div>
-  </div>
-
   <div class="video-section">
     <div class="video-card active" id="learnCard">
-      <div class="video-card-label"><span class="icon">🔊</span> 有声视频 · 学习观摩</div>
+      <div class="video-card-label"><span class="icon">🔊</span>激素的分泌、传送和作用</div>
       <video id="soundVideo" controls playsinline>
-        <source src="有声视频.mp4" type="video/mp4">
+        <source src="英文配音.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
-      <div class="video-hint">▶ 点击播放，先认真听配音内容，学习表达方式</div>
+      <div class="video-hint">▶【视频来源：《大英百科全书》官网】</div>
     </div>
     <div class="video-card" id="dubCard">
-      <div class="video-card-label"><span class="icon">🔇</span> 无声视频 · 配音练习</div>
+      <div class="video-card-label"><span class="icon">🔇</span> 无声视频 · 配音</div>
       <video id="silentVideo" muted playsinline controls>
         <source src="无声视频.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
       <div class="video-hint">🎙 点击下方录音按钮，边看边为无声视频配音</div>
     </div>
+  </div>
+
+  <div class="draft-section">
+    <h4>✍️ 旁白手卡 <span class="draft-tag">仅供打草稿 · 不参与评分</span></h4>
+    <textarea id="draftText" class="draft-text" rows="4" placeholder="你可以将配音的关键词和流程简要地梳理在此处~~"></textarea>
   </div>
 
   <div class="record-section" id="recordSection">
@@ -730,7 +756,7 @@ function showAiLoading() {
   aiLoadingTimer = setInterval(() => {
     i = (i + 1) % steps.length;
     textEl.textContent = steps[i];
-  }, 1600);
+  }, 3000);
 }
 function hideAiLoading() {
   document.getElementById('aiLoading').classList.remove('show');
@@ -766,7 +792,7 @@ function renderScore(result) {
   if (pct >= 0.9) { titleEl.textContent = '🎉 非常出色！'; summaryEl.textContent = '配音内容完整、表达准确，覆盖了几乎所有知识点！'; }
   else if (pct >= 0.7) { titleEl.textContent = '👍 表现不错！'; summaryEl.textContent = '大部分知识点都涵盖到了，还有细节可以完善。'; }
   else if (pct >= 0.5) { titleEl.textContent = '💪 继续加油！'; summaryEl.textContent = '已掌握部分要点，建议再看参考台词补充遗漏内容。'; }
-  else { titleEl.textContent = '📚 多看多练！'; summaryEl.textContent = '建议先仔细观看有声视频，注意关键知识点的表述。'; }
+  else { titleEl.textContent = '📚 多看多练！'; summaryEl.textContent = '建议先仔细观看英文视频，注意关键知识点的表述。'; }
 
   const tbody = document.getElementById('scoreBody');
   tbody.innerHTML = '';
@@ -841,7 +867,7 @@ function doRetry() {
 silentVideo.addEventListener('loadedmetadata', function() {
   const dur = Math.round(silentVideo.duration);
   document.querySelector('#dubCard .video-hint').textContent =
-    `🎙 视频时长 ${dur} 秒，点击下方录音按钮开始配音`;
+    `🎙 点击下方录音按钮开始配音`;
 });
 
 soundVideo.addEventListener('ended', function() {

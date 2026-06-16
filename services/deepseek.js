@@ -12,7 +12,7 @@ const RUBRIC = [
   { key: 'keywords', dimension: '词汇与语言', desc: '能正确使用"内分泌腺、激素、血液循环、靶细胞"等关键词', full: 1 },
   { key: 'fluency', dimension: '词汇与语言', desc: '语言表达准确、通顺', full: 1 },
   { key: 'match', dimension: '旁白匹配度', desc: '旁白内容与视频画面基本一致，能跟随画面变化进行说明', full: 1 },
-  { key: 'delivery', dimension: '表达效果', desc: '语音清楚、语速适中，有一定感染力', full: 1 },
+  { key: 'delivery', dimension: '表达效果', desc: '语音清楚、语速适中', full: 1 },
 ];
 
 const TOTAL_FULL = RUBRIC.reduce((s, r) => s + r.full, 0); // 10
