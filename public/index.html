@@ -211,12 +211,7 @@
   .score-section.show { display: block; animation: scoreIn 0.4s ease; }
 
   .score-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
+    display: none;
   }
 
   .total-score-circle {
@@ -240,7 +235,7 @@
   .total-score-circle .score-num { font-size: 40px; font-weight: 800; line-height: 1; position: relative; z-index: 1; }
   .total-score-circle .score-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; position: relative; z-index: 1; }
 
-  .score-summary-text { text-align: left; max-width: 420px; }
+  .score-summary-text { text-align: center; max-width: 600px; margin: 0 auto; }
   .score-summary-text h3 { font-size: 20px; margin-bottom: 8px; }
   .score-summary-text p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
@@ -273,6 +268,96 @@
   .badge-full { background: rgba(34,197,94,0.2); color: var(--success); }
   .badge-partial { background: rgba(245,158,11,0.2); color: var(--warning); }
   .badge-zero { background: rgba(239,68,68,0.2); color: var(--danger); }
+
+  /* Star rating system */
+  .star-rating-area {
+    text-align: center;
+    margin-bottom: 28px;
+    padding: 32px 20px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(245,158,11,0.08));
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+  }
+  .star-rating-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .star-title { font-size: 15px; color: var(--text-muted); margin-bottom: 12px; position: relative; }
+  .stars-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .star-icon {
+    font-size: 48px;
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+    filter: grayscale(1) brightness(0.4);
+    transition: none;
+    display: inline-block;
+  }
+  .star-icon.lit {
+    filter: grayscale(0) brightness(1) drop-shadow(0 0 12px rgba(245,158,11,0.6));
+  }
+  .star-icon.animate-in {
+    animation: starPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .star-icon.dim {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    filter: grayscale(1) brightness(0.3);
+  }
+  @keyframes starPop {
+    0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+    60% { opacity: 1; transform: scale(1.3) rotate(10deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  .star-level-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 100px;
+    font-size: 18px;
+    font-weight: 800;
+    position: relative;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .star-level-badge.show { opacity: 1; transform: translateY(0); }
+  .star-level-badge.level-1 { background: linear-gradient(135deg, #78716c, #57534e); color: #fafaf9; }
+  .star-level-badge.level-2 { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #faf5ff; }
+  .star-level-badge.level-3 { background: linear-gradient(135deg, #60a5fa, #2563eb); color: #eff6ff; }
+  .star-level-badge.level-4 { background: linear-gradient(135deg, #fbbf24, #d97706); color: #451a03; }
+  .star-level-badge.level-5 { background: linear-gradient(135deg, #f59e0b, #ef4444, #ec4899); color: #fff; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
+  .star-score-text { font-size: 14px; color: var(--text-muted); margin-top: 12px; position: relative; }
+  .star-score-num { font-size: 32px; font-weight: 800; color: var(--warning); }
+
+  /* Confetti for 5-star */
+  .confetti-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    top: -10px;
+    animation: confettiFall 2s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
+  }
 
   .comment-box {
     margin-top: 24px;
@@ -492,7 +577,7 @@
         <source src="英文配音.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
-      <div class="video-hint">▶【视频来源：《大英百科全书》官网】</div>
+      <div class="video-hint">▶【视频来源：《大英百科全书》官网】 剪辑后发布</div>
     </div>
     <div class="video-card" id="dubCard">
       <div class="video-card-label"><span class="icon">🔇</span> 无声视频 · 配音</div>
@@ -505,7 +590,7 @@
   </div>
 
   <div class="draft-section">
-    <h4>✍️ 旁白手卡 <span class="draft-tag">仅供打草稿 · 不参与评分</span></h4>
+    <h4>✍️ 手卡区 <span class="draft-tag">仅供打草稿 · 不参与评分</span></h4>
     <textarea id="draftText" class="draft-text" rows="4" placeholder="你可以将配音的关键词和流程简要地梳理在此处~~"></textarea>
   </div>
 
@@ -529,15 +614,22 @@
   </div>
 
   <div class="score-section" id="scoreSection">
-    <div class="score-header">
-      <div class="total-score-circle" id="totalScoreCircle">
-        <span class="score-num" id="totalScoreNum">0</span>
-        <span class="score-label">/ 10 分</span>
+    <div class="star-rating-area" id="starArea">
+      <div class="confetti-container" id="confettiBox"></div>
+      <div class="star-title">🏅 科普配音员等级</div>
+      <div class="stars-container" id="starsContainer">
+        <span class="star-icon" data-i="1">⭐</span>
+        <span class="star-icon" data-i="2">⭐</span>
+        <span class="star-icon" data-i="3">⭐</span>
+        <span class="star-icon" data-i="4">⭐</span>
+        <span class="star-icon" data-i="5">⭐</span>
       </div>
-      <div class="score-summary-text">
-        <h3 id="scoreTitle">评分结果</h3>
-        <p id="scoreSummary"></p>
-      </div>
+      <div class="star-level-badge" id="starBadge"></div>
+      <div class="star-score-text">总分 <span class="star-score-num" id="starScoreNum">0</span> / 5 分</div>
+    </div>
+    <div class="score-summary-text" style="text-align:center;margin-bottom:24px;">
+      <h3 id="scoreTitle">评分结果</h3>
+      <p id="scoreSummary" style="color:var(--text-muted);margin-top:6px;"></p>
     </div>
     <table class="score-table" id="scoreTable">
       <thead>
@@ -746,7 +838,6 @@ function showAiLoading() {
   const steps = [
     'AI 正在分析你的表述...',
     '识别关键知识点...',
-    '比对参考台词...',
     '评估表达准确度...',
     '生成评分与点评...',
   ];
@@ -765,34 +856,64 @@ function hideAiLoading() {
 
 function renderScore(result) {
   setStep(3);
-  const totalFull = result.totalFull || 10;
   const totalScore = result.score ?? 0;
+  const stars = Math.min(5, result.stars ?? totalScore);
 
-  const circle = document.getElementById('totalScoreCircle');
-  const numEl = document.getElementById('totalScoreNum');
-  const pct = totalFull ? totalScore / totalFull : 0;
-  let color = 'var(--danger)';
-  if (pct >= 0.8) color = 'var(--success)';
-  else if (pct >= 0.6) color = 'var(--warning)';
+  // Star animation
+  const starEls = document.querySelectorAll('.star-icon');
+  starEls.forEach(el => { el.className = 'star-icon'; });
+  const confettiBox = document.getElementById('confettiBox');
+  confettiBox.innerHTML = '';
 
-  circle.style.background = `conic-gradient(${color} ${pct * 360}deg, rgba(255,255,255,0.1) 0deg)`;
-  circle.style.border = `4px solid ${color}`;
-  numEl.style.color = color;
+  starEls.forEach((el, idx) => {
+    const i = idx + 1;
+    setTimeout(() => {
+      el.classList.add('animate-in');
+      if (i <= stars) {
+        el.classList.add('lit');
+      } else {
+        el.classList.add('dim');
+      }
+    }, i * 250);
+  });
 
-  let current = 0;
-  const step = Math.max(totalScore / 20, 0.05);
-  const timer = setInterval(() => {
-    current += step;
-    if (current >= totalScore) { current = totalScore; clearInterval(timer); }
-    numEl.textContent = current.toFixed(1);
-  }, 30);
+  // Badge + title after stars animate
+  const LEVELS = {
+    0: { name: '还需努力', title: '📚 多看多练！', summary: '建议先结合书本观看学习视频，注意关键知识点再来一次。' },
+    1: { name: '⭐ 新手配音员', title: '📚 多看多练！', summary: '建议先结合书本观看学习视频，注意关键知识点再来一次。' },
+    2: { name: '⭐⭐ 初级配音员', title: '💪 继续加油！', summary: '已掌握部分要点，再补充遗漏的知识点就更好了。' },
+    3: { name: '⭐⭐⭐ 中级配音员', title: '👍 表现不错！', summary: '大部分知识点涵盖到了，继续打磨细节。' },
+    4: { name: '⭐⭐⭐⭐ 高级配音员', title: '🎉 非常出色！', summary: '配音内容完整、表达准确，继续保持！' },
+    5: { name: '⭐⭐⭐⭐⭐ 王牌配音员', title: '🏆 完美！', summary: '满分！你就是科普配音界的天花板！' },
+  };
+  const level = LEVELS[stars] || LEVELS[0];
 
-  const titleEl = document.getElementById('scoreTitle');
-  const summaryEl = document.getElementById('scoreSummary');
-  if (pct >= 0.9) { titleEl.textContent = '🎉 非常出色！'; summaryEl.textContent = '配音内容完整、表达准确，覆盖了几乎所有知识点！'; }
-  else if (pct >= 0.7) { titleEl.textContent = '👍 表现不错！'; summaryEl.textContent = '大部分知识点都涵盖到了，还有细节可以完善。'; }
-  else if (pct >= 0.5) { titleEl.textContent = '💪 继续加油！'; summaryEl.textContent = '已掌握部分要点，建议再看参考台词补充遗漏内容。'; }
-  else { titleEl.textContent = '📚 多看多练！'; summaryEl.textContent = '建议先仔细观看英文视频，注意关键知识点的表述。'; }
+  setTimeout(() => {
+    const badge = document.getElementById('starBadge');
+    badge.textContent = level.name;
+    badge.className = 'star-level-badge level-' + stars;
+    setTimeout(() => badge.classList.add('show'), 50);
+
+    document.getElementById('starScoreNum').textContent = totalScore;
+    document.getElementById('scoreTitle').textContent = level.title;
+    document.getElementById('scoreSummary').textContent = result.comment || level.summary;
+
+    // 5-star confetti
+    if (stars === 5) {
+      const colors = ['#f59e0b', '#ef4444', '#22c55e', '#6366f1', '#ec4899', '#3b82f6'];
+      for (let c = 0; c < 40; c++) {
+        const dot = document.createElement('div');
+        dot.className = 'confetti';
+        dot.style.left = Math.random() * 100 + '%';
+        dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+        dot.style.animationDelay = Math.random() * 1 + 's';
+        dot.style.animationDuration = (1.5 + Math.random()) + 's';
+        dot.style.width = (6 + Math.random() * 8) + 'px';
+        dot.style.height = (6 + Math.random() * 8) + 'px';
+        confettiBox.appendChild(dot);
+      }
+    }
+  }, stars * 250 + 400);
 
   const tbody = document.getElementById('scoreBody');
   tbody.innerHTML = '';
@@ -875,7 +996,7 @@ soundVideo.addEventListener('ended', function() {
   setStep(2);
 });
 
-// 隐秘开关：连续点击标题 5 次，切换评分模型（GLM <-> DeepSeek官网）
+// 隐秘开关：连续点击标题 3 次，切换评分模型（GLM <-> DeepSeek官网）
 window.__useDeepSeek = false;
 (function() {
   const title = document.querySelector('.header h1');
@@ -885,10 +1006,10 @@ window.__useDeepSeek = false;
     count++;
     clearTimeout(timer);
     timer = setTimeout(() => { count = 0; }, 1500);
-    if (count >= 5) {
+    if (count >= 3) {
       count = 0;
       window.__useDeepSeek = !window.__useDeepSeek;
-      showToast(window.__useDeepSeek ? '已切换：DeepSeek 官网' : '已切换：GLM 免费', 'success');
+      showToast(window.__useDeepSeek ? '已切换：DeepSeek 官网模型' : '已切换：智谱 GLM 模型 ', 'success');
     }
   });
 })();
