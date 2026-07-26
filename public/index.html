@@ -12,12 +12,12 @@
     --success: #22c55e;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --bg: #0f172a;
-    --card: #1e293b;
-    --card-hover: #334155;
-    --text: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border: #334155;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --card-hover: #f1f5f9;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
     --radius: 16px;
   }
 
@@ -56,12 +56,13 @@
     text-align: center;
     margin-bottom: 32px;
     padding: 32px 20px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
     border-radius: var(--radius);
-    box-shadow: 0 8px 32px rgba(99,102,241,0.3);
+    box-shadow: 0 8px 32px rgba(14,165,233,0.3);
   }
-  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
-  .header p { font-size: 15px; color: rgba(255,255,255,0.8); }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; color: #ffffff; }
+  .header h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; color: #ffffff; }
+  .header p { font-size: 15px; color: rgba(255,255,255,0.9); }
 
   .steps {
     display: flex;
@@ -561,7 +562,7 @@
 <div class="container">
   <div class="header">
     <h1>🎬 奇妙“激”遇 🎙️</h1>
-    <h2> AI科普配音秀 </h2>
+    <h2>  AI配音秀  </h2>
     <p>内分泌腺与激素 — 科普配音 · AI评分</p>
   </div>
 
@@ -1030,8 +1031,8 @@ window.__useDeepSeek = false;
 <div id="submitModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
   <div style="background:#fff; border-radius:16px; padding:32px 28px; max-width:360px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.2); animation:modalIn 0.3s ease;">
     <div style="font-size:48px; margin-bottom:12px;">🎉</div>
-    <h3 style="margin:0 0 12px; font-size:18px; color:#333;">恭喜顺利提交你的科普配音作品！</h3>
-    <p style="color:#666; font-size:14px; line-height:1.8; margin:0 0 20px;">你把激素调节的科学知识转化为生动的科普声音，你的配音将有机会成为"一平米健康科普展"的语音解说~</p>
+    <h3 style="margin:0 0 12px; font-size:18px; color:#333;">恭喜你顺利提交科普配音作品，获得“见习侦探”的称号！</h3>
+    <p style="color:#666; font-size:14px; line-height:1.8; margin:0 0 20px;">你把激素相关的科学知识转变为生动的科普声音，你的配音将有机会成为“一平米青春健康博物馆”的语音解说～</p>
     <button onclick="closeSubmitModal()" style="background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; border-radius:24px; padding:10px 32px; font-size:15px; cursor:pointer;">好的</button>
   </div>
 </div>
