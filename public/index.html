@@ -603,7 +603,7 @@
   <div class="video-section" style="grid-template-columns: 1fr;">
     <div class="video-card active" id="learnCard">
       <div class="video-card-label"><span class="icon">🎬</span>配音示范：青少年新陈代谢旺盛，活力满满</div>
-      <video id="soundVideo" controls playsinline>
+      <video id="soundVideo" controls playsinline webkit-playsinline x5-video-player-type="h5-page" x5-video-player-fullscreen="false" x5-playsinline preload="metadata">
         <source src="有声视频.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
@@ -808,8 +808,9 @@ function openSceneModal(sceneId) {
       .then(stream => { micStream = stream; })
       .catch(err => { console.warn('麦克风预取失败:', err); });
   }
-  // 暂停示范视频，防止遮挡弹窗
+  // 暂停示范视频，防止遮挡弹窗（T7/X5 内核视频层会置顶，需要隐藏 DOM 才能销毁视频层）
   try { soundVideo.pause(); } catch(e){}
+  try { soundVideo.style.visibility = 'hidden'; } catch(e){}
   if (document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch(e){} }
   // 重置录音状态
   resetRecordState();
@@ -824,6 +825,7 @@ function closeSceneModal() {
     try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
     micStream = null;
   }
+  try { soundVideo.style.visibility = ''; } catch(e){}
   document.getElementById('sceneModal').style.display = 'none';
 }
 
