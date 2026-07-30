@@ -748,6 +748,8 @@ let isRecording = false;
 let recorder = null;
 let studentText = '';
 let currentSceneId = null;
+let micStream = null;      // 预取的麦克风流，避免录音时权限弹窗吃掉用户手势
+let videoWarmed = false;   // 视频是否已预热完成
 
 const SCENES = {
   growth:         { icon:'📏', title:'青春期身高、体重快速增长', text:'青春期身高、体重会快速增长。', hormone:'生长激素', gland:'垂体', effect:'促进物质代谢和生长发育', video:'1垂体和生长激素.mp4' },
@@ -783,9 +785,28 @@ function openSceneModal(sceneId) {
   silentVideo.load();
   // 预热：静音播一下再暂停，让视频进入 ready 状态，后续 play() 才能立即响应
   silentVideo.muted = true;
+  videoWarmed = false;
+  recordBtn.disabled = true;
   const warm = silentVideo.play();
   if (warm && warm.then) {
-    warm.then(() => { silentVideo.pause(); silentVideo.currentTime = 0; }).catch(() => {});
+    warm.then(() => {
+      silentVideo.pause();
+      silentVideo.currentTime = 0;
+      videoWarmed = true;
+      recordBtn.disabled = false;
+    }).catch(() => {
+      videoWarmed = true;
+      recordBtn.disabled = false;
+    });
+  } else {
+    videoWarmed = true;
+    recordBtn.disabled = false;
+  }
+  // 提前申请麦克风权限，避免点录音时权限弹窗吃掉用户手势导致视频 play() 被拦截
+  if (!micStream && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => { micStream = stream; })
+      .catch(err => { console.warn('麦克风预取失败:', err); });
   }
   // 暂停示范视频，防止遮挡弹窗
   try { soundVideo.pause(); } catch(e){}
@@ -799,6 +820,10 @@ function openSceneModal(sceneId) {
 function closeSceneModal() {
   if (isRecording) { try { recorder && recorder.stop(); } catch(e){} isRecording = false; }
   silentVideo.pause();
+  if (micStream) {
+    try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
+    micStream = null;
+  }
   document.getElementById('sceneModal').style.display = 'none';
 }
 
@@ -843,19 +868,22 @@ recordBtn.addEventListener('click', function() {
 
 async function startRecording() {
   try {
-    // 在用户手势同步栈里立刻播视频（关键：不能被 await 隔断）
+    // 用户手势同步栈里第一件事就是 play()，任何 await/权限弹窗都不能出现在它之前
     silentVideo.muted = true;
-    silentVideo.currentTime = 0;
     const playPromise = silentVideo.play();
     if (playPromise && playPromise.catch) {
       playPromise.catch(err => {
         console.warn('视频自动播放失败:', err);
         showToast('请手动点击视频播放键 ▶', 'warn');
+        // 兜底：用户手动点播后自动补启录音
+        silentVideo.addEventListener('play', function onManualPlay() {
+          silentVideo.removeEventListener('play', onManualPlay);
+        }, { once: true });
       });
     }
 
     recorder = new WavRecorder(16000);
-    await recorder.start();
+    await recorder.start(micStream);   // 复用预取的 stream，无需再次弹权限
     isRecording = true;
     recordBtn.classList.add('recording');
     recordStatus.textContent = '🔴 录音中...点击按钮停止';

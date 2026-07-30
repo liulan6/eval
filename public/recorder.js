@@ -6,8 +6,14 @@ class WavRecorder {
     this.recording = false;
   }
 
-  async start() {
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  async start(existingStream = null) {
+    if (existingStream) {
+      this.stream = existingStream;
+      this.ownStream = false;
+    } else {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.ownStream = true;
+    }
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     this.inputSampleRate = this.audioContext.sampleRate;
     this.source = this.audioContext.createMediaStreamSource(this.stream);
@@ -30,7 +36,7 @@ class WavRecorder {
     this.recording = false;
     if (this.processor) this.processor.disconnect();
     if (this.source) this.source.disconnect();
-    if (this.stream) this.stream.getTracks().forEach((t) => t.stop());
+    if (this.stream && this.ownStream) this.stream.getTracks().forEach((t) => t.stop());
 
     const merged = this._mergeBuffers(this.buffers);
     const downsampled = this._downsample(merged, this.inputSampleRate, this.targetSampleRate);
