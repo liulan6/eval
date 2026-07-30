@@ -781,6 +781,12 @@ function openSceneModal(sceneId) {
   document.getElementById('sceneModalText').textContent = s.text;
   silentVideoSrc.src = encodeURI(s.video);
   silentVideo.load();
+  // 预热：静音播一下再暂停，让视频进入 ready 状态，后续 play() 才能立即响应
+  silentVideo.muted = true;
+  const warm = silentVideo.play();
+  if (warm && warm.then) {
+    warm.then(() => { silentVideo.pause(); silentVideo.currentTime = 0; }).catch(() => {});
+  }
   // 暂停示范视频，防止遮挡弹窗
   try { soundVideo.pause(); } catch(e){}
   if (document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch(e){} }
@@ -837,14 +843,14 @@ recordBtn.addEventListener('click', function() {
 
 async function startRecording() {
   try {
-    // 先在用户手势同步栈里播视频，避免手机浏览器 autoplay 拦截
+    // 在用户手势同步栈里立刻播视频（关键：不能被 await 隔断）
     silentVideo.muted = true;
     silentVideo.currentTime = 0;
     const playPromise = silentVideo.play();
     if (playPromise && playPromise.catch) {
       playPromise.catch(err => {
         console.warn('视频自动播放失败:', err);
-        showToast('请手动点击视频播放键', 'warn');
+        showToast('请手动点击视频播放键 ▶', 'warn');
       });
     }
 
