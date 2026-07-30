@@ -885,6 +885,20 @@ async function startRecording() {
     recorder = new WavRecorder(16000);
     await recorder.start(micStream);   // 复用预取的 stream，无需再次弹权限
     isRecording = true;
+
+    // 手百 T7 / 微信 X5 内核会因为新建 AudioContext 抢占音频焦点而把 video pause 掉
+    // 录音期间监听 pause 事件，非用户主动/非播完，自动 resume
+    silentVideo.onpause = function() {
+      if (!isRecording) return;
+      if (silentVideo.ended) return;
+      // 稍等一拍，避开内核连续 pause
+      setTimeout(() => {
+        if (isRecording && !silentVideo.ended && silentVideo.paused) {
+          silentVideo.play().catch(() => {});
+        }
+      }, 50);
+    };
+
     recordBtn.classList.add('recording');
     recordStatus.textContent = '🔴 录音中...点击按钮停止';
     recordStatus.classList.add('recording-text');
@@ -909,6 +923,7 @@ async function startRecording() {
 async function stopRecording() {
   if (!isRecording) return;
   isRecording = false;
+  silentVideo.onpause = null;
   recordBtn.classList.remove('recording');
   recordBtn.disabled = true;
   recordStatus.textContent = '⏳ 语音转写中...';
