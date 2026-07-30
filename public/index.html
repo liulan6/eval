@@ -596,23 +596,23 @@
 
   <div class="steps">
     <div class="step active" id="step1"><span class="num">1</span> 观看示范</div>
-    <div class="step" id="step2"><span class="num">2</span> 选择场景配音</div>
+    <div class="step" id="step2"><span class="num">2</span> 录制配音</div>
     <div class="step" id="step3"><span class="num">3</span> 查看评分</div>
   </div>
 
   <div class="video-section" style="grid-template-columns: 1fr;">
     <div class="video-card active" id="learnCard">
-      <div class="video-card-label"><span class="icon">🎬</span>示范配音 · 激素科普</div>
+      <div class="video-card-label"><span class="icon">🎬</span>配音示范：青少年新陈代谢旺盛，活力满满</div>
       <video id="soundVideo" controls playsinline>
         <source src="有声视频.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
-      <div class="video-hint">▶ 先观看科普示范视频，了解激素相关知识</div>
+      <div class="video-hint">▶ 相关激素：甲状腺激素；内分泌腺：甲状腺；激素的调节作用：促进生长发育、新陈代谢，提高神经系统的兴奋性</div>
     </div>
   </div>
 
   <div class="scene-section" id="sceneSection">
-    <h3 class="scene-title">🎙 请你选择其中一个生命现象，用激素解释</h3>
+    <h3 class="scene-title">🎙 请你选择其中一个生命现象，用激素的调节作用进行解释</h3>
     <div class="scene-grid">
       <div class="scene-card" data-scene="growth">
         <div class="scene-icon">📏</div>
@@ -714,12 +714,6 @@
     <h3 style="text-align:center; margin:6px 0 4px; font-size:18px; color:var(--text);" id="sceneModalTitle">场景标题</h3>
     <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:16px;" id="sceneModalText">场景文案</p>
 
-    <div style="background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(3,105,161,0.08)); border-radius:12px; padding:12px 16px; margin-bottom:16px; font-size:13px; line-height:1.9;">
-      <div><span style="color:var(--text-muted);">相关激素：</span><b id="sceneModalHormone">-</b></div>
-      <div><span style="color:var(--text-muted);">内分泌腺：</span><b id="sceneModalGland">-</b></div>
-      <div><span style="color:var(--text-muted);">调节作用：</span><b id="sceneModalEffect">-</b></div>
-    </div>
-
     <video id="silentVideo" muted playsinline controls style="width:100%; border-radius:12px; background:#000; margin-bottom:12px;">
       <source id="silentVideoSrc" src="无声视频.mp4" type="video/mp4">
       您的浏览器不支持视频播放
@@ -785,9 +779,6 @@ function openSceneModal(sceneId) {
   document.getElementById('sceneModalIcon').textContent = s.icon;
   document.getElementById('sceneModalTitle').textContent = s.title;
   document.getElementById('sceneModalText').textContent = s.text;
-  document.getElementById('sceneModalHormone').textContent = s.hormone;
-  document.getElementById('sceneModalGland').textContent = s.gland;
-  document.getElementById('sceneModalEffect').textContent = s.effect;
   silentVideoSrc.src = encodeURI(s.video);
   silentVideo.load();
   // 重置录音状态
