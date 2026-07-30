@@ -64,6 +64,34 @@
   .header h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; color: #ffffff; }
   .header p { font-size: 15px; color: rgba(255,255,255,0.9); }
 
+  .scene-section { margin-bottom: 28px; }
+  .scene-title { text-align: center; font-size: 18px; color: var(--text); margin-bottom: 20px; font-weight: 700; }
+  .scene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .scene-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .scene-grid { grid-template-columns: 1fr; } }
+  .scene-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .scene-card:hover {
+    transform: translateY(-4px);
+    border-color: #0ea5e9;
+    box-shadow: 0 8px 24px rgba(14,165,233,0.15);
+  }
+  .scene-icon { font-size: 40px; line-height: 1; }
+  .scene-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .scene-card-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; min-height: 42px; }
+  .scene-card-cta { font-size: 12px; color: #0ea5e9; margin-top: 4px; font-weight: 600; }
+
   .steps {
     display: flex;
     gap: 12px;
@@ -472,7 +500,7 @@
   .ai-loading {
     position: fixed;
     inset: 0;
-    z-index: 2000;
+    z-index: 10000;
     display: none;
     align-items: center;
     justify-content: center;
@@ -567,51 +595,55 @@
   </div>
 
   <div class="steps">
-    <div class="step active" id="step1"><span class="num">1</span> 观看学习</div>
-    <div class="step" id="step2"><span class="num">2</span> 录制配音</div>
+    <div class="step active" id="step1"><span class="num">1</span> 观看示范</div>
+    <div class="step" id="step2"><span class="num">2</span> 选择场景配音</div>
     <div class="step" id="step3"><span class="num">3</span> 查看评分</div>
   </div>
 
-  <div class="video-section">
+  <div class="video-section" style="grid-template-columns: 1fr;">
     <div class="video-card active" id="learnCard">
-      <div class="video-card-label"><span class="icon">🔊</span>激素的分泌、传送和作用</div>
+      <div class="video-card-label"><span class="icon">🎬</span>示范配音 · 激素科普</div>
       <video id="soundVideo" controls playsinline>
         <source src="有声视频.mp4" type="video/mp4">
         您的浏览器不支持视频播放
       </video>
-      <div class="video-hint">▶ 科普视频经剪辑后发布</div>
-    </div>
-    <div class="video-card" id="dubCard">
-      <div class="video-card-label"><span class="icon">🔇</span> 无声视频 · 配音</div>
-      <video id="silentVideo" muted playsinline controls>
-        <source src="无声视频.mp4" type="video/mp4">
-        您的浏览器不支持视频播放
-      </video>
-      <div class="video-hint">🎙 点击下方录音按钮，边看边为无声视频配音</div>
+      <div class="video-hint">▶ 先观看科普示范视频，了解激素相关知识</div>
     </div>
   </div>
 
-  <div class="draft-section">
-    <h4>✍️ 手卡区 <span class="draft-tag">仅供打草稿 · 不参与评分</span></h4>
-    <textarea id="draftText" class="draft-text" rows="4" placeholder="你可以将配音的关键词和流程简要地梳理在此处~~"></textarea>
-  </div>
-
-  <div class="record-section" id="recordSection">
-    <h3>🎙️ 开始你的配音</h3>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-      点击录音后，无声视频将同步播放。请边看画面边进行配音。
-    </p>
-    <button class="record-btn" id="recordBtn" title="点击开始录音"></button>
-    <div class="record-status" id="recordStatus">点击红色按钮开始录音</div>
-
-    <div class="transcript-box" id="transcriptBox" style="display:none;">
-      <div class="transcript-label">📝 语音识别结果（可手动修正）</div>
-      <textarea id="transcriptText" rows="3" placeholder="转写文字会显示在这里..."></textarea>
-    </div>
-
-    <div class="action-bar">
-      <button class="btn btn-primary" id="scoreBtn" style="display:none;" onclick="doScore()">📊 提交 AI 评分</button>
-      <button class="btn btn-outline" id="retryBtn" style="display:none;" onclick="doRetry()">🔄 重新录制</button>
+  <div class="scene-section" id="sceneSection">
+    <h3 class="scene-title">🎙 请你选择其中一个生命现象，用激素解释</h3>
+    <div class="scene-grid">
+      <div class="scene-card" data-scene="growth">
+        <div class="scene-icon">📏</div>
+        <div class="scene-card-title">青春期身高、体重快速增长</div>
+        <div class="scene-card-text">青春期身高、体重会快速增长。</div>
+        <div class="scene-card-cta">点击开始配音 →</div>
+      </div>
+      <div class="scene-card" data-scene="blood_sugar">
+        <div class="scene-icon">🍚</div>
+        <div class="scene-card-title">餐后血糖调节</div>
+        <div class="scene-card-text">用餐后血糖升高，一段时间后血糖保持稳定。</div>
+        <div class="scene-card-cta">点击开始配音 →</div>
+      </div>
+      <div class="scene-card" data-scene="stress">
+        <div class="scene-icon">⚡</div>
+        <div class="scene-card-title">考试紧张时心跳加速</div>
+        <div class="scene-card-text">考试紧张时，我们会感到心跳加速、浑身紧绷。</div>
+        <div class="scene-card-cta">点击开始配音 →</div>
+      </div>
+      <div class="scene-card" data-scene="male_puberty">
+        <div class="scene-icon">👦</div>
+        <div class="scene-card-title">男生第二性征发育</div>
+        <div class="scene-card-text">进入青春期后，男生的喉结逐渐明显，开始长胡须。</div>
+        <div class="scene-card-cta">点击开始配音 →</div>
+      </div>
+      <div class="scene-card" data-scene="female_puberty">
+        <div class="scene-icon">👧</div>
+        <div class="scene-card-title">女生月经初潮</div>
+        <div class="scene-card-text">进入青春期后，女生出现月经。</div>
+        <div class="scene-card-cta">点击开始配音 →</div>
+      </div>
     </div>
   </div>
 
@@ -674,14 +706,65 @@
   </div>
 </div>
 
+<!-- 场景配音弹窗（必须在下方 script 之前，脚本会取里面的元素） -->
+<div id="sceneModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:9998; justify-content:center; align-items:flex-start; overflow-y:auto; padding:20px 0;">
+  <div class="scene-modal-inner" style="background:var(--card); border-radius:16px; padding:24px 20px; max-width:640px; width:92%; margin:auto; box-shadow:0 8px 40px rgba(0,0,0,0.25); position:relative;">
+    <button onclick="closeSceneModal()" style="position:absolute; top:12px; right:16px; background:transparent; border:none; font-size:24px; color:var(--text-muted); cursor:pointer; line-height:1;">✕</button>
+    <div style="font-size:32px; text-align:center;" id="sceneModalIcon">📏</div>
+    <h3 style="text-align:center; margin:6px 0 4px; font-size:18px; color:var(--text);" id="sceneModalTitle">场景标题</h3>
+    <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:16px;" id="sceneModalText">场景文案</p>
+
+    <div style="background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(3,105,161,0.08)); border-radius:12px; padding:12px 16px; margin-bottom:16px; font-size:13px; line-height:1.9;">
+      <div><span style="color:var(--text-muted);">相关激素：</span><b id="sceneModalHormone">-</b></div>
+      <div><span style="color:var(--text-muted);">内分泌腺：</span><b id="sceneModalGland">-</b></div>
+      <div><span style="color:var(--text-muted);">调节作用：</span><b id="sceneModalEffect">-</b></div>
+    </div>
+
+    <video id="silentVideo" muted playsinline controls style="width:100%; border-radius:12px; background:#000; margin-bottom:12px;">
+      <source id="silentVideoSrc" src="无声视频.mp4" type="video/mp4">
+      您的浏览器不支持视频播放
+    </video>
+
+    <div class="draft-section" style="margin-bottom:16px;">
+      <h4>✍️ 手卡区 <span class="draft-tag">仅供打草稿 · 不参与评分</span></h4>
+      <textarea id="draftText" class="draft-text" rows="3" placeholder="你可以将配音的关键词和流程简要地梳理在此处~~"></textarea>
+    </div>
+
+    <div class="record-section" id="recordSection" style="margin:0;">
+      <h3 style="font-size:16px;">🎙️ 开始你的配音</h3>
+      <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">点击录音后，无声视频将同步播放。请边看画面边进行配音。</p>
+      <button class="record-btn" id="recordBtn" title="点击开始录音"></button>
+      <div class="record-status" id="recordStatus">点击红色按钮开始录音</div>
+      <div class="transcript-box" id="transcriptBox" style="display:none;">
+        <div class="transcript-label">📝 语音识别结果（可手动修正）</div>
+        <textarea id="transcriptText" rows="3" placeholder="转写文字会显示在这里..."></textarea>
+      </div>
+      <div class="action-bar">
+        <button class="btn btn-primary" id="scoreBtn" style="display:none;" onclick="doScore()">📊 提交 AI 评分</button>
+        <button class="btn btn-outline" id="retryBtn" style="display:none;" onclick="doRetry()">🔄 重新录制</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="recorder.js"></script>
 <script>
 // ========== State ==========
 let isRecording = false;
 let recorder = null;
 let studentText = '';
+let currentSceneId = null;
+
+const SCENES = {
+  growth:         { icon:'📏', title:'青春期身高、体重快速增长', text:'青春期身高、体重会快速增长。', hormone:'生长激素', gland:'垂体', effect:'促进物质代谢和生长发育', video:'1垂体和生长激素.mp4' },
+  blood_sugar:    { icon:'🍚', title:'餐后血糖调节', text:'用餐后血糖升高，一段时间后血糖保持稳定。', hormone:'胰岛素', gland:'胰岛', effect:'调节/降低血糖浓度', video:'2胰岛素.mp4' },
+  stress:         { icon:'⚡', title:'考试紧张时心跳加速', text:'考试紧张时，我们会感到心跳加速、浑身紧绷。', hormone:'肾上腺素', gland:'肾上腺', effect:'使人心跳加快、肌肉收缩力增强，应付紧急情况', video:'3肾上腺素.mp4' },
+  male_puberty:   { icon:'👦', title:'男生第二性征发育', text:'进入青春期后，男生的喉结逐渐明显，开始长胡须。', hormone:'雄性激素', gland:'睾丸', effect:'刺激男性生殖器官发育和第二性征出现', video:'4雄性激素.mp4' },
+  female_puberty: { icon:'👧', title:'女生月经初潮', text:'进入青春期后，女生出现月经。', hormone:'雌性激素', gland:'卵巢', effect:'刺激女性生殖器官发育和第二性征出现', video:'5雌性激素.mp4' },
+};
 
 const silentVideo = document.getElementById('silentVideo');
+const silentVideoSrc = document.getElementById('silentVideoSrc');
 const soundVideo = document.getElementById('soundVideo');
 const recordBtn = document.getElementById('recordBtn');
 const recordStatus = document.getElementById('recordStatus');
@@ -689,6 +772,47 @@ const transcriptBox = document.getElementById('transcriptBox');
 const transcriptText = document.getElementById('transcriptText');
 const scoreBtn = document.getElementById('scoreBtn');
 const retryBtn = document.getElementById('retryBtn');
+
+// ========== Scene modal ==========
+document.querySelectorAll('.scene-card').forEach(card => {
+  card.addEventListener('click', () => openSceneModal(card.dataset.scene));
+});
+
+function openSceneModal(sceneId) {
+  const s = SCENES[sceneId];
+  if (!s) return;
+  currentSceneId = sceneId;
+  document.getElementById('sceneModalIcon').textContent = s.icon;
+  document.getElementById('sceneModalTitle').textContent = s.title;
+  document.getElementById('sceneModalText').textContent = s.text;
+  document.getElementById('sceneModalHormone').textContent = s.hormone;
+  document.getElementById('sceneModalGland').textContent = s.gland;
+  document.getElementById('sceneModalEffect').textContent = s.effect;
+  silentVideoSrc.src = encodeURI(s.video);
+  silentVideo.load();
+  // 重置录音状态
+  resetRecordState();
+  document.getElementById('sceneModal').style.display = 'flex';
+  setStep(2);
+}
+
+function closeSceneModal() {
+  if (isRecording) { try { recorder && recorder.stop(); } catch(e){} isRecording = false; }
+  silentVideo.pause();
+  document.getElementById('sceneModal').style.display = 'none';
+}
+
+function resetRecordState() {
+  studentText = '';
+  transcriptText.value = '';
+  transcriptBox.style.display = 'none';
+  scoreBtn.style.display = 'none';
+  retryBtn.style.display = 'none';
+  recordStatus.textContent = '点击红色按钮开始录音';
+  recordStatus.classList.remove('recording-text');
+  recordBtn.classList.remove('recording');
+  recordBtn.disabled = false;
+}
 
 // ========== Step ==========
 function setStep(n) {
@@ -698,8 +822,8 @@ function setStep(n) {
     if (i < n) el.classList.add('done');
     else if (i === n) el.classList.add('active');
   }
-  document.getElementById('learnCard').classList.toggle('active', n === 1);
-  document.getElementById('dubCard').classList.toggle('active', n === 2);
+  const learn = document.getElementById('learnCard');
+  if (learn) learn.classList.toggle('active', n === 1);
 }
 
 // ========== Toast ==========
@@ -809,7 +933,7 @@ async function doScore() {
     const resp = await fetch('/api/evaluate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ studentText: text, provider: window.__useDeepSeek ? 'deepseek' : 'glm' }),
+      body: JSON.stringify({ studentText: text, sceneId: currentSceneId, provider: window.__useDeepSeek ? 'deepseek' : 'glm' }),
       signal: ctrl.signal,
     });
     const data = await resp.json();
@@ -954,6 +1078,8 @@ function renderScore(result) {
   renderList('errorsBox', 'errorsList', result.errors);
   renderList('suggestionsBox', 'suggestionsList', result.suggestions);
 
+  document.getElementById('sceneModal').style.display = 'none';
+  silentVideo.pause();
   document.getElementById('scoreSection').classList.add('show');
   document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -983,29 +1109,22 @@ function closeSubmitModal() {
 }
 
 function doRetry() {
-  studentText = '';
-  transcriptText.value = '';
-  transcriptBox.style.display = 'none';
-  scoreBtn.style.display = 'none';
-  retryBtn.style.display = 'none';
+  resetRecordState();
   document.getElementById('scoreSection').classList.remove('show');
-  recordStatus.textContent = '点击红色按钮开始录音';
-  recordStatus.classList.remove('recording-text');
-  silentVideo.currentTime = 0;
-  setStep(1);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (currentSceneId) {
+    // 回到当前场景 modal 继续录
+    openSceneModal(currentSceneId);
+  } else {
+    setStep(2);
+    document.getElementById('sceneSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // ========== Init ==========
-silentVideo.addEventListener('loadedmetadata', function() {
-  const dur = Math.round(silentVideo.duration);
-  document.querySelector('#dubCard .video-hint').textContent =
-    `🎙 点击下方录音按钮开始配音`;
-});
-
 soundVideo.addEventListener('ended', function() {
-  showToast('学习完成！现在可以试试为无声视频配音', 'success');
+  showToast('学习完成！请选择一个生命现象开始配音', 'success');
   setStep(2);
+  document.getElementById('sceneSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 // 隐秘开关：连续点击标题 3 次，切换评分模型（GLM <-> DeepSeek官网）
@@ -1026,6 +1145,8 @@ window.__useDeepSeek = false;
   });
 })();
 </script>
+
+<!-- 场景配音弹窗已上移到 script 之前 -->
 
 <!-- 提交成功弹窗 -->
 <div id="submitModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">

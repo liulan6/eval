@@ -3,10 +3,60 @@ const axios = require('axios');
 // ===== 固化：本视频原文 + 评分标准（5 分制）=====
 const VIDEO_TEXT = `内分泌腺没有导管，它们分泌的激素进入腺体内的毛细血管，随着血液循环传送到身体各处，直到碰到特定的组织细胞才能发挥相应的作用，我们把这些细胞叫做激素的靶细胞。不同内分泌腺产生的激素作用于相应的靶细胞，并调节相应的生理过程。`;
 
+// ===== 5 个生命现象场景 =====
+const SCENES = [
+  {
+    id: 'growth',
+    title: '青春期身高、体重快速增长',
+    text: '青春期身高、体重会快速增长。',
+    hormone: '生长激素',
+    gland: '垂体',
+    effect: '促进物质代谢和生长发育',
+    icon: '📏',
+  },
+  {
+    id: 'blood_sugar',
+    title: '餐后血糖调节',
+    text: '用餐后血糖升高，一段时间后血糖保持稳定。',
+    hormone: '胰岛素',
+    gland: '胰岛',
+    effect: '调节/降低血糖浓度',
+    icon: '🍚',
+  },
+  {
+    id: 'stress',
+    title: '考试紧张时心跳加速',
+    text: '考试紧张时，我们会感到心跳加速、浑身紧绷。',
+    hormone: '肾上腺素',
+    gland: '肾上腺',
+    effect: '使人心跳加快、肌肉收缩力增强，应付紧急情况',
+    icon: '⚡',
+  },
+  {
+    id: 'male_puberty',
+    title: '男生第二性征发育',
+    text: '进入青春期后，男生的喉结逐渐明显，开始长胡须。',
+    hormone: '雄性激素',
+    gland: '睾丸',
+    effect: '刺激男性生殖器官发育和第二性征出现',
+    icon: '👦',
+  },
+  {
+    id: 'female_puberty',
+    title: '女生月经初潮',
+    text: '进入青春期后，女生出现月经。',
+    hormone: '雌性激素',
+    gland: '卵巢',
+    effect: '刺激女性生殖器官发育和第二性征出现',
+    icon: '👧',
+  },
+];
+
 const RUBRIC = [
+  { key: 'hormone_gland', dimension: '相关激素与内分泌腺', desc: '能准确说出与所选生命现象相关的激素和内分泌腺', full: 1 },
   { key: 'secretion', dimension: '激素的分泌', desc: '能准确说出内分泌腺没有导管，或内分泌腺分泌的激素直接进入腺体内的毛细血管', full: 1 },
   { key: 'transport', dimension: '激素的传送', desc: '能准确说出激素通过血液循环传送到全身各处', full: 1 },
-  { key: 'target_cell', dimension: '激素的作用', desc: '能准确说出激素只作用于相应的靶细胞', full: 2 },
+  { key: 'target_cell', dimension: '激素的作用', desc: '能准确说出激素只作用于相应的靶细胞，并用该激素的调节作用对生命现象进行解释', full: 1 },
   { key: 'fluency', dimension: '配音效果', desc: '吐字清晰、有逻辑、表达流畅，配音与视频画面基本一致', full: 1 },
 ];
 
@@ -17,7 +67,7 @@ const TOTAL_FULL = RUBRIC.reduce((s, r) => s + r.full, 0); // 5
  * @param {string} studentText 学生中文讲述（已转文字）
  * @returns {Promise<object>}
  */
-async function evaluate(studentText, provider = 'glm') {
+async function evaluate(studentText, provider = 'glm', sceneId) {
   // 默认走 GLM；provider==='deepseek' 时走 DeepSeek 官网
   let apiKey, baseUrl, model;
   if (provider === 'deepseek') {
@@ -38,22 +88,44 @@ async function evaluate(studentText, provider = 'glm') {
     (r, i) => `${i + 1}. [key=${r.key}] ${r.dimension} | ${r.desc} | 满分 ${r.full}`
   ).join('\n');
 
-  const systemPrompt = `你是一位严谨的初中生物老师，负责按固定评分标准评判学生用中文复述一段生物教学视频的表现。
+  const scene = SCENES.find((s) => s.id === sceneId);
+  const sceneBlock = scene
+    ? `
 
-【视频原文（标准答案依据）】
+【当前生命现象场景】
+- 现象描述：${scene.text}
+- 相关激素：${scene.hormone}
+- 内分泌腺：${scene.gland}
+- 激素的调节作用：${scene.effect}
+（学生需要用上述激素的调节作用来解释该生命现象）`
+    : '';
+
+  const hormoneGlandLine = scene
+    ? `- 相关激素与内分泌腺（key=hormone_gland）：学生准确说出"${scene.hormone}"和"${scene.gland}"（两个都要说到）给1分，只说一个或都没说给0分。`
+    : `- 相关激素与内分泌腺（key=hormone_gland）：学生准确说出所选生命现象对应的相关激素和内分泌腺给1分，否则0分。`;
+
+  const targetCellLine = scene
+    ? `- 激素的作用（key=target_cell）：学生准确说出"激素只作用于相应的靶细胞"且用"${scene.effect}"（或等价表达）解释该生命现象给1分；只说其中之一或都没说给0分。`
+    : `- 激素的作用（key=target_cell）：学生准确说出"激素只作用于相应的靶细胞"并用该激素的调节作用对生命现象进行解释给1分，否则0分。`;
+
+  const systemPrompt = `你是一位严谨的初中生物老师，负责按固定评分标准评判学生用中文为某个生命现象科普配音的表现。
+
+【视频原文（激素通用知识）】
 ${VIDEO_TEXT}
+${sceneBlock}
 
 【评分标准（总分 ${TOTAL_FULL} 分）】
 ${rubricLines}
 
 评分要求：
 - 逐项打分，每项得分必须是 0 到该项满分之间的整数。
-- 严格依据视频原文判断科学内容是否准确，宁严勿松，错误概念不给分。
+- 严格依据标准答案判断科学内容是否准确，宁严勿松，错误概念不给分。
 - 学生讲述是语音转写文字，可能有少量错别字，不因转写噪声扣分。
+${hormoneGlandLine}
 - 激素的分泌（key=secretion）：学生说出"内分泌腺没有导管"或"内分泌腺分泌的激素直接进入腺体内的毛细血管"任一即给1分，完全没提到给0分。
 - 激素的传送（key=transport）：学生说出"激素通过血液循环传送到全身各处"给1分，完全没提到给0分。
-- 激素的作用（key=target_cell）：学生准确说出"激素只作用于相应的靶细胞"给2分；说了"激素作用于靶细胞"但没有强调只作用于特定靶细胞给1分；完全没提到给0分。
-- 配音效果（key=fluency）：吐字清晰、有逻辑、表达流畅，配音与视频画面基本一致给1分；吐字不清晰、没有逻辑、表达不流畅，配音与视频画面不一致给0分。
+${targetCellLine}
+- 配音效果（key=fluency）：吐字清晰、有逻辑、表达流畅给1分；否则给0分。
 - score 为各项得分之和。
 - 总分 1-5 分分别对应 1-5 星科普配音员。
 
@@ -69,7 +141,9 @@ ${rubricLines}
   "suggestions": ["改进建议（中文）"]
 }`;
 
-  const userPrompt = `【学生中文讲述】\n${studentText}\n\n请按上述评分标准逐项打分。`;
+  const userPrompt = scene
+    ? `【学生为"${scene.text}"这一现象的配音文字】\n${studentText}\n\n请按上述评分标准逐项打分。`
+    : `【学生中文讲述】\n${studentText}\n\n请按上述评分标准逐项打分。`;
 
   console.log('[评分] provider=%s, baseUrl=%s, model=%s', provider, baseUrl, model);
 
@@ -120,4 +194,4 @@ ${rubricLines}
   return parsed;
 }
 
-module.exports = { evaluate, VIDEO_TEXT, RUBRIC, TOTAL_FULL };
+module.exports = { evaluate, VIDEO_TEXT, RUBRIC, TOTAL_FULL, SCENES };

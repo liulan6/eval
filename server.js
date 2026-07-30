@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { speechToText } = require('./services/siliconflowAsr');
-const { evaluate } = require('./services/deepseek');
+const { evaluate, SCENES } = require('./services/deepseek');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,19 +28,24 @@ app.post('/api/asr', async (req, res) => {
   }
 });
 
-// 2. AI 评分：视频原文与评分标准已固化在后端，只需传学生讲述文字
+// 2. AI 评分：视频原文与评分标准已固化在后端，只需传学生讲述文字 + 场景ID
 app.post('/api/evaluate', async (req, res) => {
   try {
-    const { studentText, provider } = req.body;
+    const { studentText, provider, sceneId } = req.body;
     if (!studentText) {
       return res.status(400).json({ ok: false, error: '缺少 studentText' });
     }
-    const result = await evaluate(studentText, provider === 'deepseek' ? 'deepseek' : 'glm');
+    const result = await evaluate(studentText, provider === 'deepseek' ? 'deepseek' : 'glm', sceneId);
     res.json({ ok: true, result });
   } catch (err) {
     console.error('Evaluate error:', err.message);
     res.status(500).json({ ok: false, error: err.message });
   }
+});
+
+// 3. 场景列表
+app.get('/api/scenes', (req, res) => {
+  res.json({ ok: true, scenes: SCENES });
 });
 
 app.listen(PORT, () => {
