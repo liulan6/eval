@@ -714,7 +714,7 @@
     <h3 style="text-align:center; margin:6px 0 4px; font-size:18px; color:var(--text);" id="sceneModalTitle">场景标题</h3>
     <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:16px;" id="sceneModalText">场景文案</p>
 
-    <video id="silentVideo" muted playsinline controls style="width:100%; border-radius:12px; background:#000; margin-bottom:12px;">
+    <video id="silentVideo" muted playsinline webkit-playsinline x5-video-player-type="h5-page" x5-video-player-fullscreen="false" x5-playsinline preload="auto" controls style="width:100%; border-radius:12px; background:#000; margin-bottom:12px;">
       <source id="silentVideoSrc" src="无声视频.mp4" type="video/mp4">
       您的浏览器不支持视频播放
     </video>
@@ -837,6 +837,17 @@ recordBtn.addEventListener('click', function() {
 
 async function startRecording() {
   try {
+    // 先在用户手势同步栈里播视频，避免手机浏览器 autoplay 拦截
+    silentVideo.muted = true;
+    silentVideo.currentTime = 0;
+    const playPromise = silentVideo.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.catch(err => {
+        console.warn('视频自动播放失败:', err);
+        showToast('请手动点击视频播放键', 'warn');
+      });
+    }
+
     recorder = new WavRecorder(16000);
     await recorder.start();
     isRecording = true;
@@ -848,9 +859,6 @@ async function startRecording() {
     retryBtn.style.display = 'none';
     setStep(2);
 
-    silentVideo.currentTime = 0;
-    silentVideo.muted = true;
-    silentVideo.play();
     silentVideo.onended = function() {
       if (isRecording) {
         showToast('视频播放结束，录音自动停止', 'success');
