@@ -781,6 +781,9 @@ function openSceneModal(sceneId) {
   document.getElementById('sceneModalText').textContent = s.text;
   silentVideoSrc.src = encodeURI(s.video);
   silentVideo.load();
+  // 暂停示范视频，防止遮挡弹窗
+  try { soundVideo.pause(); } catch(e){}
+  if (document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch(e){} }
   // 重置录音状态
   resetRecordState();
   document.getElementById('sceneModal').style.display = 'flex';
