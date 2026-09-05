@@ -881,8 +881,10 @@ async function startRecording() {
       }, 50);
     };
 
-    // 用户手势同步栈里第一件事就是 play()，任何 await/权限弹窗都不能出现在它之前
+    // 视频从头播（配音覆盖完整视频）。先暂停再 seek，避免播放中 seek 触发暂停 bug
     silentVideo.muted = true;
+    silentVideo.pause();
+    silentVideo.currentTime = 0;
     const playPromise = silentVideo.play();
     if (playPromise && playPromise.catch) {
       playPromise.catch(err => {
