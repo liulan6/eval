@@ -729,6 +729,10 @@
       <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">点击录音后，无声视频将同步播放。请边看画面边进行配音。</p>
       <button class="record-btn" id="recordBtn" title="点击开始录音"></button>
       <div class="record-status" id="recordStatus">点击红色按钮开始录音</div>
+      <div id="volMeterWrap" style="display:none; max-width:260px; margin:0 auto 12px; height:8px; background:rgba(0,0,0,0.15); border-radius:4px; overflow:hidden;">
+        <div id="volMeterBar" style="height:100%; width:0%; background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444); transition:width 80ms linear;"></div>
+      </div>
+      <div id="volHint" style="display:none; font-size:12px; color:var(--text-muted); margin-bottom:12px;">🎚️ 麦克风电平（说话时应看到跳动）</div>
       <div class="transcript-box" id="transcriptBox" style="display:none;">
         <div class="transcript-label">📝 语音识别结果（可手动修正）</div>
         <textarea id="transcriptText" rows="3" placeholder="转写文字会显示在这里..."></textarea>
@@ -884,11 +888,17 @@ async function startRecording() {
       },
     });
 
-    // 权限拿到后：视频从头播
+    // 关键：先启动录音采样占住 audio session，再播视频。反过来视频会抢走 audio session 导致 mic 静音（iOS/手百 X5）
+    recorder = new WavRecorder(16000, 0);
+    await recorder.start(micStream);
+    isRecording = true;
+    startVolumeMeter(recorder);
+
+    // 录音已在采样，再播视频
     silentVideo.muted = true;
     try { silentVideo.pause(); } catch(e){}
     silentVideo.currentTime = 0;
-    recordStatus.textContent = '▶ 视频加载中...';
+    recordStatus.textContent = '🔴 录音中 · ▶ 视频加载中...';
     try {
       const playPromise = silentVideo.play();
       if (playPromise && playPromise.then) {
@@ -899,11 +909,6 @@ async function startRecording() {
       console.warn('视频自动播放失败:', err);
       showToast('请手动点击视频播放键 ▶', 'warn');
     }
-
-    // 视频已经在播，再启动录音（复用已拿到的 stream，不再申请）
-    recorder = new WavRecorder(16000, 0);
-    await recorder.start(micStream);
-    isRecording = true;
 
     recordBtn.classList.add('recording');
     recordStatus.textContent = '🔴 录音中...点击按钮停止';
@@ -935,8 +940,15 @@ async function stopRecording() {
   recordStatus.textContent = '⏳ 语音转写中...';
   recordStatus.classList.remove('recording-text');
   silentVideo.pause();
+  stopVolumeMeter();
 
+  const maxRms = recorder ? recorder.maxRms : 0;
+  console.log('[录音诊断] maxRms =', maxRms);
   const wavBlob = recorder.stop();
+  // maxRms < 0.005 基本可以判定 mic 没进声（背景噪声一般也有 0.005+）
+  if (maxRms > 0 && maxRms < 0.005) {
+    showToast(`麦克风信号极弱 (峰值 ${maxRms.toFixed(4)})，可能被浏览器抑制`, 'warn', 5000);
+  }
   try {
     const audioBase64 = await blobToBase64(wavBlob);
     const resp = await fetch('/api/asr', {
@@ -990,6 +1002,32 @@ function waitVideoPlaying(video, timeoutMs = 800) {
     video.addEventListener('timeupdate', finish, { once: true });
     setTimeout(finish, timeoutMs);
   });
+}
+
+// 音量条：读 recorder.lastRms（0~1），映射到宽度 0~100%
+let volMeterTimer = null;
+function startVolumeMeter(rec) {
+  const wrap = document.getElementById('volMeterWrap');
+  const hint = document.getElementById('volHint');
+  const bar = document.getElementById('volMeterBar');
+  if (!wrap || !bar) return;
+  wrap.style.display = 'block';
+  hint.style.display = 'block';
+  bar.style.width = '0%';
+  if (volMeterTimer) clearInterval(volMeterTimer);
+  volMeterTimer = setInterval(() => {
+    if (!rec || !rec.recording) return;
+    // RMS 一般 0~0.3，放大到 0~100
+    const pct = Math.min(100, Math.round(rec.lastRms * 300));
+    bar.style.width = pct + '%';
+  }, 80);
+}
+function stopVolumeMeter() {
+  if (volMeterTimer) { clearInterval(volMeterTimer); volMeterTimer = null; }
+  const wrap = document.getElementById('volMeterWrap');
+  const hint = document.getElementById('volHint');
+  if (wrap) wrap.style.display = 'none';
+  if (hint) hint.style.display = 'none';
 }
 
 // ========== Scoring (后端 AI) ==========

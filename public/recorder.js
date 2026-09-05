@@ -38,10 +38,18 @@ class WavRecorder {
     this.buffers = [];
     this.skipLeftMs = this.dropMs;
     this.recording = true;
+    this.lastRms = 0;
+    this.maxRms = 0;
 
     this.processor.onaudioprocess = (e) => {
       if (!this.recording) return;
       const channel = e.inputBuffer.getChannelData(0);
+      // 实时 RMS（用于外部音量条 + 诊断）
+      let sum = 0;
+      for (let i = 0; i < channel.length; i++) sum += channel[i] * channel[i];
+      const rms = Math.sqrt(sum / channel.length);
+      this.lastRms = rms;
+      if (rms > this.maxRms) this.maxRms = rms;
       // 开头 dropMs 内的数据直接丢弃（AGC/降噪未收敛，会识别成"嗯"）
       if (this.skipLeftMs > 0) {
         this.skipLeftMs -= (channel.length / this.inputSampleRate) * 1000;
