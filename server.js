@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { speechToText } = require('./services/siliconflowAsr');
+const { speechToText } = require('./services/dashscopeAsr');
 const { evaluate, SCENES } = require('./services/deepseek');
 
 const app = express();
