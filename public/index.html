@@ -802,10 +802,17 @@ function openSceneModal(sceneId) {
     videoWarmed = true;
     recordBtn.disabled = false;
   }
-  // 提前申请麦克风权限，避免点录音时权限弹窗吃掉用户手势导致视频 play() 被拦截
+  // 提前申请麦克风 + 静默预热一整条录音链路（消耗掉"第一次"的坏状态，用户真录时就是第二次）
   if (!micStream && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => { micStream = stream; })
+      .then(async stream => {
+        micStream = stream;
+        try {
+          const warmup = new WavRecorder(16000);
+          await warmup.start(stream);
+          setTimeout(() => { try { warmup.stop(); } catch(e){} }, 600); // 录600ms直接丢弃
+        } catch(e) { console.warn('录音链路预热失败:', e); }
+      })
       .catch(err => { console.warn('麦克风预取失败:', err); });
   }
   // 页面内切换：隐藏示范视频+场景卡片，展开配音区
