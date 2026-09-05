@@ -476,7 +476,7 @@
     padding: 12px 24px;
     border-radius: 12px;
     font-size: 14px;
-    z-index: 1000;
+    z-index: 10001;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
@@ -870,6 +870,17 @@ recordBtn.addEventListener('click', function() {
 
 async function startRecording() {
   try {
+    // 先注册 onpause 守护，再创建 AudioContext（X5/T7 内核会抢音频焦点把视频 pause 掉）
+    silentVideo.onpause = function() {
+      if (!isRecording) return;
+      if (silentVideo.ended) return;
+      setTimeout(() => {
+        if (isRecording && !silentVideo.ended && silentVideo.paused) {
+          silentVideo.play().catch(() => {});
+        }
+      }, 50);
+    };
+
     // 用户手势同步栈里第一件事就是 play()，任何 await/权限弹窗都不能出现在它之前
     silentVideo.muted = true;
     const playPromise = silentVideo.play();
@@ -877,29 +888,12 @@ async function startRecording() {
       playPromise.catch(err => {
         console.warn('视频自动播放失败:', err);
         showToast('请手动点击视频播放键 ▶', 'warn');
-        // 兜底：用户手动点播后自动补启录音
-        silentVideo.addEventListener('play', function onManualPlay() {
-          silentVideo.removeEventListener('play', onManualPlay);
-        }, { once: true });
       });
     }
 
     recorder = new WavRecorder(16000);
     await recorder.start(micStream);   // 复用预取的 stream，无需再次弹权限
     isRecording = true;
-
-    // 手百 T7 / 微信 X5 内核会因为新建 AudioContext 抢占音频焦点而把 video pause 掉
-    // 录音期间监听 pause 事件，非用户主动/非播完，自动 resume
-    silentVideo.onpause = function() {
-      if (!isRecording) return;
-      if (silentVideo.ended) return;
-      // 稍等一拍，避开内核连续 pause
-      setTimeout(() => {
-        if (isRecording && !silentVideo.ended && silentVideo.paused) {
-          silentVideo.play().catch(() => {});
-        }
-      }, 50);
-    };
 
     recordBtn.classList.add('recording');
     recordStatus.textContent = '🔴 录音中...点击按钮停止';
