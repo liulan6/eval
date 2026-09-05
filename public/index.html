@@ -873,26 +873,29 @@ async function startRecording() {
       }, 50);
     };
 
-    // 视频从头播（配音覆盖完整视频）。先暂停再 seek，避免播放中 seek 触发暂停 bug
+    // 关键顺序：先申请麦克风权限（权限弹窗会暂停 media），拿到 stream 再播视频，避免视频被弹窗打断
+    recordStatus.textContent = '🎤 请授予麦克风权限...';
+    const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // 权限拿到后：视频从头播
     silentVideo.muted = true;
-    silentVideo.pause();
+    try { silentVideo.pause(); } catch(e){}
     silentVideo.currentTime = 0;
     recordStatus.textContent = '▶ 视频加载中...';
-    // 等视频真正开始播放（有一帧画面）再启动录音，保证录音起点对齐视频画面
     try {
       const playPromise = silentVideo.play();
       if (playPromise && playPromise.then) {
         await playPromise;
       }
-      // 等到 playing 事件触发或 currentTime > 0，确保画面已经出来
       await waitVideoPlaying(silentVideo, 800);
     } catch (err) {
       console.warn('视频自动播放失败:', err);
       showToast('请手动点击视频播放键 ▶', 'warn');
     }
 
-    recorder = new WavRecorder(16000, 0); // 不丢开头数据，保持每次录音链路一致
-    await recorder.start();              // 每次都新申请 mic，录完就释放，不缓存 stream
+    // 视频已经在播，再启动录音（复用已拿到的 stream，不再申请）
+    recorder = new WavRecorder(16000, 0);
+    await recorder.start(micStream);
     isRecording = true;
 
     recordBtn.classList.add('recording');
