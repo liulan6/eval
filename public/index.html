@@ -748,7 +748,6 @@ let isRecording = false;
 let recorder = null;
 let studentText = '';
 let currentSceneId = null;
-let micStream = null;      // 预取的麦克风流，避免录音时权限弹窗吃掉用户手势
 let videoWarmed = false;   // 视频是否已预热完成
 
 const SCENES = {
@@ -783,7 +782,7 @@ function openSceneModal(sceneId) {
   document.getElementById('sceneModalText').textContent = s.text;
   silentVideoSrc.src = encodeURI(s.video);
   silentVideo.load();
-  // 预热：静音播一下再暂停，让视频进入 ready 状态，后续 play() 才能立即响应
+  // 提前预热视频，不预取麦克风（每次录音都走同一条 getUserMedia 路径，避免首次特殊化）
   silentVideo.muted = true;
   videoWarmed = false;
   recordBtn.disabled = true;
@@ -802,19 +801,6 @@ function openSceneModal(sceneId) {
     videoWarmed = true;
     recordBtn.disabled = false;
   }
-  // 提前申请麦克风 + 静默预热一整条录音链路（消耗掉"第一次"的坏状态，用户真录时就是第二次）
-  if (!micStream && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(async stream => {
-        micStream = stream;
-        try {
-          const warmup = new WavRecorder(16000);
-          await warmup.start(stream);
-          setTimeout(() => { try { warmup.stop(); } catch(e){} }, 600); // 录600ms直接丢弃
-        } catch(e) { console.warn('录音链路预热失败:', e); }
-      })
-      .catch(err => { console.warn('麦克风预取失败:', err); });
-  }
   // 页面内切换：隐藏示范视频+场景卡片，展开配音区
   try { soundVideo.pause(); } catch(e){}
   document.querySelector('.video-section').style.display = 'none';
@@ -828,10 +814,6 @@ function openSceneModal(sceneId) {
 function backToScenes() {
   if (isRecording) { try { recorder && recorder.stop(); } catch(e){} isRecording = false; }
   silentVideo.pause();
-  if (micStream) {
-    try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
-    micStream = null;
-  }
   document.getElementById('dubSection').style.display = 'none';
   document.querySelector('.video-section').style.display = '';
   document.getElementById('sceneSection').style.display = '';
@@ -903,16 +885,13 @@ async function startRecording() {
       });
     }
 
-    recorder = new WavRecorder(16000, 600); // 丢开头600ms坏数据
-    await recorder.start(micStream);   // 复用预取的 stream，无需再次弹权限
+    recorder = new WavRecorder(16000, 0); // 不丢开头数据，保持每次录音链路一致
+    await recorder.start();              // 每次都新申请 mic，录完就释放，不缓存 stream
     isRecording = true;
 
     recordBtn.classList.add('recording');
-    recordStatus.textContent = '⏳ 准备中，稍等半秒再开口...';
+    recordStatus.textContent = '🔴 录音中...点击按钮停止';
     recordStatus.classList.add('recording-text');
-    setTimeout(() => {
-      if (isRecording) recordStatus.textContent = '🔴 录音中...点击按钮停止';
-    }, 600);
     transcriptBox.style.display = 'none';
     scoreBtn.style.display = 'none';
     retryBtn.style.display = 'none';
