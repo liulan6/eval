@@ -12,7 +12,14 @@ class WavRecorder {
       this.stream = existingStream;
       this.ownStream = false;
     } else {
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // 移动端：关闭 AEC/降噪/AGC，避免视频音频（即使 muted）与 mic 交互导致输入被压掉
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
+      });
       this.ownStream = true;
     }
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -23,6 +30,10 @@ class WavRecorder {
     this.inputSampleRate = this.audioContext.sampleRate;
     this.source = this.audioContext.createMediaStreamSource(this.stream);
     this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+    // 静音 gain：让 processor 有下游触发 onaudioprocess，但不把 mic 声音真的送回扬声器
+    // 若直接 connect(destination)，mic → speaker 回路会触发浏览器 AEC，把 mic 输入整个抑制掉（手机浏览器尤其明显）
+    this.mute = this.audioContext.createGain();
+    this.mute.gain.value = 0;
 
     this.buffers = [];
     this.skipLeftMs = this.dropMs;
@@ -40,12 +51,14 @@ class WavRecorder {
     };
 
     this.source.connect(this.processor);
-    this.processor.connect(this.audioContext.destination);
+    this.processor.connect(this.mute);
+    this.mute.connect(this.audioContext.destination);
   }
 
   stop() {
     this.recording = false;
     if (this.processor) this.processor.disconnect();
+    if (this.mute) this.mute.disconnect();
     if (this.source) this.source.disconnect();
     if (this.stream && this.ownStream) this.stream.getTracks().forEach((t) => t.stop());
 

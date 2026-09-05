@@ -874,8 +874,15 @@ async function startRecording() {
     };
 
     // 关键顺序：先申请麦克风权限（权限弹窗会暂停 media），拿到 stream 再播视频，避免视频被弹窗打断
+    // 关闭 AEC/降噪/AGC：视频音频（即使 muted）在部分手机浏览器仍会与 mic 交互，AEC 会把 mic 输入整个抑制掉
     recordStatus.textContent = '🎤 请授予麦克风权限...';
-    const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+      },
+    });
 
     // 权限拿到后：视频从头播
     silentVideo.muted = true;
