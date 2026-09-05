@@ -15,6 +15,10 @@ class WavRecorder {
       this.ownStream = true;
     }
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // 手百/iOS 首次 AudioContext 会是 suspended，必须 resume 否则 onaudioprocess 不跑、录出全静音
+    if (this.audioContext.state === 'suspended') {
+      try { await this.audioContext.resume(); } catch (e) { console.warn('AudioContext resume 失败:', e); }
+    }
     this.inputSampleRate = this.audioContext.sampleRate;
     this.source = this.audioContext.createMediaStreamSource(this.stream);
     this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
