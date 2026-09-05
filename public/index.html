@@ -706,10 +706,10 @@
   </div>
 </div>
 
-<!-- 场景配音弹窗（必须在下方 script 之前，脚本会取里面的元素） -->
-<div id="sceneModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:9998; justify-content:center; align-items:flex-start; overflow-y:auto; padding:20px 0;">
-  <div class="scene-modal-inner" style="background:var(--card); border-radius:16px; padding:24px 20px; max-width:640px; width:92%; margin:auto; box-shadow:0 8px 40px rgba(0,0,0,0.25); position:relative;">
-    <button onclick="closeSceneModal()" style="position:absolute; top:12px; right:16px; background:transparent; border:none; font-size:24px; color:var(--text-muted); cursor:pointer; line-height:1;">✕</button>
+<!-- 场景配音页（页面内切换，不用弹窗，规避手百 X5/T7 内核视频层级问题） -->
+<div id="dubSection" style="display:none;">
+  <div class="dub-panel" style="background:var(--card); border:2px solid var(--border); border-radius:16px; padding:24px 20px; position:relative;">
+    <button onclick="backToScenes()" style="position:absolute; top:12px; right:16px; background:transparent; border:none; font-size:13px; color:var(--text-muted); cursor:pointer; line-height:1;">✕ 换个场景</button>
     <div style="font-size:32px; text-align:center;" id="sceneModalIcon">📏</div>
     <h3 style="text-align:center; margin:6px 0 4px; font-size:18px; color:var(--text);" id="sceneModalTitle">场景标题</h3>
     <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:16px;" id="sceneModalText">场景文案</p>
@@ -808,25 +808,28 @@ function openSceneModal(sceneId) {
       .then(stream => { micStream = stream; })
       .catch(err => { console.warn('麦克风预取失败:', err); });
   }
-  // 暂停示范视频，防止遮挡弹窗（T7/X5 内核视频层会置顶，需要隐藏 DOM 才能销毁视频层）
+  // 页面内切换：隐藏示范视频+场景卡片，展开配音区
   try { soundVideo.pause(); } catch(e){}
-  try { soundVideo.style.visibility = 'hidden'; } catch(e){}
-  if (document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch(e){} }
-  // 重置录音状态
+  document.querySelector('.video-section').style.display = 'none';
+  document.getElementById('sceneSection').style.display = 'none';
+  document.getElementById('dubSection').style.display = 'block';
   resetRecordState();
-  document.getElementById('sceneModal').style.display = 'flex';
   setStep(2);
+  document.getElementById('dubSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function closeSceneModal() {
+function backToScenes() {
   if (isRecording) { try { recorder && recorder.stop(); } catch(e){} isRecording = false; }
   silentVideo.pause();
   if (micStream) {
     try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
     micStream = null;
   }
-  try { soundVideo.style.visibility = ''; } catch(e){}
-  document.getElementById('sceneModal').style.display = 'none';
+  document.getElementById('dubSection').style.display = 'none';
+  document.querySelector('.video-section').style.display = '';
+  document.getElementById('sceneSection').style.display = '';
+  setStep(2);
+  document.getElementById('sceneSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetRecordState() {
@@ -1127,7 +1130,7 @@ function renderScore(result) {
   renderList('errorsBox', 'errorsList', result.errors);
   renderList('suggestionsBox', 'suggestionsList', result.suggestions);
 
-  document.getElementById('sceneModal').style.display = 'none';
+  document.getElementById('dubSection').style.display = 'none';
   silentVideo.pause();
   document.getElementById('scoreSection').classList.add('show');
   document.getElementById('scoreSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
