@@ -18,7 +18,7 @@ async function speechToText(audioBuffer, format = 'wav') {
     filename: `audio.${format}`,
     contentType: `audio/${format}`,
   });
-  form.append('model', 'XingChenAGI/XingChenASR-V3.2-Ultra');
+  form.append('model', 'Qwen/Qwen3-ASR-1.7B');
   form.append('language', 'zh');
 
   const resp = await axios.post(
