@@ -1,7 +1,8 @@
 // 浏览器端录音 → 输出 16000Hz / 单声道 / 16bit WAV（百度 ASR 要求）
 class WavRecorder {
-  constructor(targetSampleRate = 16000) {
+  constructor(targetSampleRate = 16000, dropMs = 0) {
     this.targetSampleRate = targetSampleRate;
+    this.dropMs = dropMs; // 丢弃开头毫秒数（规避 AGC 未收敛的坏数据）
     this.buffers = [];
     this.recording = false;
   }
@@ -24,11 +25,17 @@ class WavRecorder {
     this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
     this.buffers = [];
+    this.skipLeftMs = this.dropMs;
     this.recording = true;
 
     this.processor.onaudioprocess = (e) => {
       if (!this.recording) return;
       const channel = e.inputBuffer.getChannelData(0);
+      // 开头 dropMs 内的数据直接丢弃（AGC/降噪未收敛，会识别成"嗯"）
+      if (this.skipLeftMs > 0) {
+        this.skipLeftMs -= (channel.length / this.inputSampleRate) * 1000;
+        return;
+      }
       this.buffers.push(new Float32Array(channel));
     };
 

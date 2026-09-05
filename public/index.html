@@ -903,13 +903,16 @@ async function startRecording() {
       });
     }
 
-    recorder = new WavRecorder(16000);
+    recorder = new WavRecorder(16000, 600); // 丢开头600ms坏数据
     await recorder.start(micStream);   // 复用预取的 stream，无需再次弹权限
     isRecording = true;
 
     recordBtn.classList.add('recording');
-    recordStatus.textContent = '🔴 录音中...点击按钮停止';
+    recordStatus.textContent = '⏳ 准备中，稍等半秒再开口...';
     recordStatus.classList.add('recording-text');
+    setTimeout(() => {
+      if (isRecording) recordStatus.textContent = '🔴 录音中...点击按钮停止';
+    }, 600);
     transcriptBox.style.display = 'none';
     scoreBtn.style.display = 'none';
     retryBtn.style.display = 'none';
