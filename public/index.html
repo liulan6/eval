@@ -931,6 +931,17 @@ async function stopRecording() {
   recordStatus.classList.remove('recording-text');
   silentVideo.pause();
 
+  // 静音检测：没录到声音就不浪费 ASR 调用
+  const rms = recorder.getRms ? recorder.getRms() : 1;
+  if (rms < 0.005) {
+    recordBtn.disabled = false;
+    recordStatus.textContent = '🎙 没录到声音，请再点一次录音试试';
+    retryBtn.style.display = 'inline-flex';
+    showToast('没录到声音，请再点一次录音', 'warn');
+    try { recorder.stop(); } catch(e) {}
+    return;
+  }
+
   const wavBlob = recorder.stop();
   try {
     const audioBase64 = await blobToBase64(wavBlob);
