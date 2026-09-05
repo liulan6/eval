@@ -8,15 +8,6 @@ class WavRecorder {
 
   async start(existingStream = null) {
     if (existingStream) {
-      // X5/T7 内核：刚 getUserMedia 的 track 初始 muted，直接录会全静音，等解除（最多 500ms）
-      const track = existingStream.getAudioTracks && existingStream.getAudioTracks()[0];
-      if (track && track.muted) {
-        await new Promise(resolve => {
-          const done = () => { clearTimeout(tid); resolve(); };
-          const tid = setTimeout(done, 500);
-          track.addEventListener('unmute', done, { once: true });
-        });
-      }
       this.stream = existingStream;
       this.ownStream = false;
     } else {
@@ -43,15 +34,6 @@ class WavRecorder {
 
     this.source.connect(this.processor);
     this.processor.connect(this.audioContext.destination);
-  }
-
-  // 录音数据平均音量，用于判断是否真的录到了声音
-  getRms() {
-    const merged = this._mergeBuffers(this.buffers);
-    if (!merged.length) return 0;
-    let sum = 0;
-    for (let i = 0; i < merged.length; i++) sum += merged[i] * merged[i];
-    return Math.sqrt(sum / merged.length);
   }
 
   stop() {
