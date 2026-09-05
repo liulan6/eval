@@ -18,7 +18,7 @@ async function speechToText(audioBuffer, format = 'wav') {
     filename: `audio.${format}`,
     contentType: `audio/${format}`,
   });
-  form.append('model', 'FunAudioLLM/SenseVoiceSmall');
+  form.append('model', 'XingChenAGI/XingChenASR-V3.2-Ultra');
   form.append('language', 'zh');
 
   const resp = await axios.post(
@@ -29,7 +29,7 @@ async function speechToText(audioBuffer, format = 'wav') {
         ...form.getHeaders(),
         'Authorization': `Bearer ${apiKey}`,
       },
-      timeout: 30000,
+      timeout: 60000,
     }
   );
 
